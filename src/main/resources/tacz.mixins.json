@@ -5,12 +5,12 @@
   "plugin": "com.tacz.guns.GunMonMixinPlugin",
   "mixins": [
     "client.network.ClientLoginNetworkHandlerAccessor",
-    "common.CarryOnMixin",
     "common.EntityMixin",
     "common.EntityTypeMixin",
     "common.ItemMixinForTweakeroo",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
+    "common.PlayerMixin",
     "common.RaycastContextMixin",
     "common.ServerPlayerEntityMixin",
     "common.ServerPlayNetworkHandlerMixin",
