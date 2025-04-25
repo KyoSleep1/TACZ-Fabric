@@ -12,6 +12,9 @@ base {
 
 repositories {
 	maven {
+		url = "https://repo.minelittlepony-mod.com/maven/release"
+	}
+	maven {
 		url = "https://cursemaven.com"
 		content {
 			includeGroup "curse.maven"
@@ -110,6 +113,7 @@ dependencies {
 	modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components_api_version}"))
 	modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_api_version}"))
 	modImplementation(include("maven.modrinth:modernkeybinding:${project.modernkeybinding_version}"))
+	modImplementation(include("com.sollace:fabwork:${project.fabwork_version}"))
 
 	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
 		exclude(group: "net.fabricmc.fabric-api")

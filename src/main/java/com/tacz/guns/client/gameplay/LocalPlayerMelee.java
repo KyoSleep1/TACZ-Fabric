@@ -82,7 +82,7 @@ public class LocalPlayerMelee {
                 // 播放音效
                 SoundPlayManager.playMeleeBayonetSound(player, gunIndex);
                 // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.sendToServer(new PlayerMeleeC2SPacket());
+                NetworkHandler.PLAYER_MELEE.sendToServer(new PlayerMeleeC2SPacket());
                 // 动画状态机转移状态
                 GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
@@ -99,7 +99,7 @@ public class LocalPlayerMelee {
                 // 播放音效
                 SoundPlayManager.playMeleeStockSound(player, gunIndex);
                 // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.sendToServer(new PlayerMeleeC2SPacket());
+                NetworkHandler.PLAYER_MELEE.sendToServer(new PlayerMeleeC2SPacket());
                 // 动画状态机转移状态
                 GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
@@ -115,7 +115,7 @@ public class LocalPlayerMelee {
                 // 播放音效
                 SoundPlayManager.playMeleePushSound(player, gunIndex);
                 // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.sendToServer(new PlayerMeleeC2SPacket());
+                NetworkHandler.PLAYER_MELEE.sendToServer(new PlayerMeleeC2SPacket());
                 // 动画状态机转移状态
                 GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {

@@ -1,15 +1,12 @@
 package com.tacz.guns.network.packets.c2s;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.network.packets.s2c.RefreshRefitScreenS2CPacket;
 import com.tacz.guns.util.AttachmentDataUtils;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,8 +15,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class UnloadAttachmentC2SPacket implements FabricPacket {
-    public static final PacketType<UnloadAttachmentC2SPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "upload_attachment"), UnloadAttachmentC2SPacket::new);
+public class UnloadAttachmentC2SPacket implements HandledPacket<ServerPlayerEntity> {
+
     private final int gunSlotIndex;
     private final AttachmentType attachmentType;
 
@@ -33,12 +30,13 @@ public class UnloadAttachmentC2SPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
+    public void toBuffer(PacketByteBuf buf) {
         buf.writeInt(gunSlotIndex);
         buf.writeEnumConstant(attachmentType);
     }
 
-    public void handle(ServerPlayerEntity player, PacketSender sender) {
+    @Override
+    public void handle(ServerPlayerEntity player) {
         if (player == null) return;
         PlayerInventory inventory = player.getInventory();
         ItemStack gunItem = inventory.getStack(gunSlotIndex);
@@ -54,11 +52,6 @@ public class UnloadAttachmentC2SPacket implements FabricPacket {
                 sender.sendPacket(new RefreshRefitScreenS2CPacket());
             }
         }
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return TYPE;
     }
 
     private static void dropAllAmmo(PlayerEntity player, IGun iGun, ItemStack gunItem) {

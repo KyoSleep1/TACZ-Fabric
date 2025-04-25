@@ -21,10 +21,10 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class GunRefitScreen extends Screen {
-    public static final Identifier SLOT_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/gui/refit_slot.png");
-    public static final Identifier TURN_PAGE_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/gui/refit_turn_page.png");
-    public static final Identifier UNLOAD_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/gui/refit_unload.png");
-    public static final Identifier ICONS_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/gui/refit_slot_icons.png");
+    public static final Identifier SLOT_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/gui/refit_slot.png");
+    public static final Identifier TURN_PAGE_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/gui/refit_turn_page.png");
+    public static final Identifier UNLOAD_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/gui/refit_unload.png");
+    public static final Identifier ICONS_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/gui/refit_slot_icons.png");
 
     public static final int ICON_UV_SIZE = 32;
     public static final int SLOT_SIZE = 18;
@@ -127,8 +127,8 @@ public class GunRefitScreen extends Screen {
                 InventoryAttachmentSlot button = new InventoryAttachmentSlot(startX, currentY, i, inventory, b -> {
                     int slotIndex = ((InventoryAttachmentSlot) b).getSlotIndex();
                     SoundPlayManager.playerRefitSound(inventory.getStack(slotIndex), player, SoundManager.INSTALL_SOUND);
-                    RefitGunC2SPacket message = new RefitGunC2SPacket(slotIndex, inventory.selectedSlot, RefitTransform.getCurrentTransformType());
-                    NetworkHandler.sendToServer(message);
+                    NetworkHandler.REFIT_GUN.sendToServer(new RefitGunC2SPacket(slotIndex, inventory.selectedSlot,
+                            RefitTransform.getCurrentTransformType()));
                 });
                 this.addDrawableChild(button);
                 currentY = currentY + SLOT_SIZE;
@@ -201,8 +201,9 @@ public class GunRefitScreen extends Screen {
                         int freeSlot = inventory.getEmptySlot();
                         if (freeSlot != -1) {
                             SoundPlayManager.playerRefitSound(attachmentItem, player, SoundManager.UNINSTALL_SOUND);
-                            UnloadAttachmentC2SPacket message = new UnloadAttachmentC2SPacket(inventory.selectedSlot, RefitTransform.getCurrentTransformType());
-                            NetworkHandler.sendToServer(message);
+                            NetworkHandler.PLAYER_UNLOAD_ATTACHMENT.sendToServer(
+                                    new UnloadAttachmentC2SPacket(inventory.selectedSlot,
+                                            RefitTransform.getCurrentTransformType()));
                         } else {
                             player.sendMessage(Text.translatable("gui.tacz.gun_refit.unload.no_space"));
                         }

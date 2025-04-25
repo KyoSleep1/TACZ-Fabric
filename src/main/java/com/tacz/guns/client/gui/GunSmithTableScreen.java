@@ -188,7 +188,7 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
                         return;
                     }
                 }
-                NetworkHandler.sendToServer(new CraftC2SPacket(this.selectedRecipe.getId(), this.handler.syncId));
+                NetworkHandler.CRAFT.sendToServer(new CraftC2SPacket(this.selectedRecipe.getId(), this.handler.syncId));
             }
         }));
     }

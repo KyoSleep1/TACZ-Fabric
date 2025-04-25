@@ -46,7 +46,7 @@ public class LocalPlayerDraw {
         if (MinecraftClient.getInstance().interactionManager != null) {
             MinecraftClient.getInstance().interactionManager.syncSelectedSlot();
         }
-        NetworkHandler.sendToServer(new PlayerDrawGunC2SPacket());
+        NetworkHandler.PLAYER_DRAW.sendToServer(new PlayerDrawGunC2SPacket());
         new GunDrawEvent(player, lastItem, currentItem, LogicalSide.CLIENT).post();
 
         // 不处于收枪状态时才能收枪

@@ -149,7 +149,7 @@ public class LocalPlayerShoot {
                 // 记录新的开火时间戳
                 data.clientShootTimestamp = System.currentTimeMillis();
                 // 发送开火的数据包，通知服务器
-                NetworkHandler.sendToServer(new PlayerShootC2SPacket());
+                NetworkHandler.PLAYER_SHOOT.sendToServer(new PlayerShootC2SPacket());
             }
             // 触发击发事件
             boolean fire = !new GunFireEvent(player, mainhandItem, LogicalSide.CLIENT).post();

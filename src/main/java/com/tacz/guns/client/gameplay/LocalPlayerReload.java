@@ -53,7 +53,7 @@ public class LocalPlayerReload {
                 return;
             }
             // 发包通知服务器
-            NetworkHandler.sendToServer(new PlayerReloadGunC2SPacket());
+            NetworkHandler.PLAYER_RELOAD.sendToServer(new PlayerReloadGunC2SPacket());
             // 执行客户端 reload 相关内容
             this.doReload(iGun, gunIndex, mainhandItem);
         });

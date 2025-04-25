@@ -51,7 +51,7 @@ public class LocalPlayerBolt {
             data.lockState(operator -> operator.getSynBoltCoolDown() >= 0);
             data.isBolting = true;
             // 发包通知服务器
-            NetworkHandler.sendToServer(new PlayerBoltGunC2SPacket());
+            NetworkHandler.PLAYER_BOLT.sendToServer(new PlayerBoltGunC2SPacket());
             // 播放动画和音效
             GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
