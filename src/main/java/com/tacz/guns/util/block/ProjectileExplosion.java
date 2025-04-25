@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.util.HitboxHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.ProtectionEnchantment;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
@@ -28,30 +28,33 @@ import java.util.Optional;
 import java.util.Set;
 
 public class ProjectileExplosion extends Explosion {
+
     private static final ExplosionBehavior DEFAULT_CONTEXT = new ExplosionBehavior();
     private final World world;
     private final double x;
     private final double y;
     private final double z;
-    private final float power;
     private final float radius;
     private final boolean knockback;
     private final Entity owner;
     private final Entity exploder;
     private final ExplosionBehavior damageCalculator;
+    private final DamageSource source;
 
-    public ProjectileExplosion(World world, Entity owner, Entity exploder, @Nullable DamageSource source, @Nullable ExplosionBehavior damageCalculator, double x, double y, double z, float power, float radius, boolean knockback, Explosion.DestructionType mode) {
-        super(world, exploder, source, damageCalculator, x, y, z, radius, AmmoConfig.EXPLOSIVE_AMMO_FIRE.get(), mode);
+    public ProjectileExplosion(World world, @Nullable Entity owner, Entity exploder, @Nullable DamageSource source,
+                               ExplosionBehavior damageCalculator, double x, double y, double z, float power,
+                               float radius, boolean knockback, boolean createFire, DestructionType destructionType) {
+        super(world, owner, x, y, z, power, createFire, destructionType);
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.power = power;
         this.radius = radius;
         this.owner = owner;
         this.exploder = exploder;
         this.damageCalculator = damageCalculator == null ? DEFAULT_CONTEXT : damageCalculator;
         this.knockback = knockback;
+        this.source = source;
     }
 
     @Override
@@ -115,7 +118,7 @@ public class ProjectileExplosion extends Explosion {
         Vec3d explosionPos = new Vec3d(this.x, this.y, this.z);
 
         for (Entity entity : entities) {
-            if (entity.isImmuneToExplosion()) {
+            if (!damageCalculator.shouldDamage(this, entity)) {
                 continue;
             }
 
@@ -154,8 +157,11 @@ public class ProjectileExplosion extends Explosion {
                 d[13] = new Vec3d(deltaX, deltaY, boundingBox.maxZ);
                 d[14] = new Vec3d(deltaX, deltaY, deltaZ);
                 for (int s = 0; s < 15; s++) {
-                    result = BlockRayTrace.rayTraceBlocks(this.world, new RaycastContext(explosionPos, d[s], RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, null));
-                    minDistance = (result.getType() != BlockHitResult.Type.BLOCK) ? Math.min(minDistance, explosionPos.distanceTo(d[s])) : minDistance;
+                    result = BlockRayTrace.rayTraceBlocks(this.world, new RaycastContext(explosionPos, d[s],
+                            RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
+                            ShapeContext.absent()));
+                    minDistance = (result.getType() != BlockHitResult.Type.BLOCK) ? Math.min(minDistance,
+                            explosionPos.distanceTo(d[s])) : minDistance;
                 }
                 strength = minDistance * 2 / radius;
                 deltaX -= this.x;
@@ -175,12 +181,8 @@ public class ProjectileExplosion extends Explosion {
                 deltaZ /= distanceToExplosion;
             }
 
-            double damage = 1.0D - strength;
-            entity.damage(this.getDamageSource(), (float) damage * this.power);
-
-            if (entity instanceof LivingEntity) {
-                damage = (float) ProtectionEnchantment.transformExplosionKnockback((LivingEntity) entity, damage);
-            }
+            final float damage = this.damageCalculator.calculateDamage(this, entity);
+            entity.damage(this.source, damage);
 
             // 启用击退效果
             if (AmmoConfig.EXPLOSIVE_AMMO_KNOCK_BACK.get() && this.knockback) {
