@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class SyncedEntityDataEvent {
         }
     }
 
-    public static boolean onPlayerJoinWorld(Entity entity, World world, boolean ignoredLoadedFromDisk) {
+    public static boolean onPlayerJoinWorld(Entity entity, ServerWorld world) {
         if (entity instanceof PlayerEntity player && !world.isClient()) {
             DataHolder holder = SyncedEntityData.instance().getDataHolder(player);
             if (holder != null) {

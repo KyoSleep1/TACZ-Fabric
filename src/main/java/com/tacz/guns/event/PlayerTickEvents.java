@@ -1,0 +1,31 @@
+package com.tacz.guns.event;
+
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.entity.player.PlayerEntity;
+
+public class PlayerTickEvents {
+    public static final Event<Start> START = EventFactory.createArrayBacked(Start.class,
+            callbacks -> (player) -> {
+                for (Start callback : callbacks) {
+                    callback.onStartOfPlayerTick(player);
+                }
+            });
+
+    public static final Event<End> END = EventFactory.createArrayBacked(End.class,
+            callbacks -> (player) -> {
+                for (End callback : callbacks) {
+                    callback.onEndOfPlayerTick(player);
+                }
+            });
+
+    @FunctionalInterface
+    public interface End {
+        void onEndOfPlayerTick(PlayerEntity player);
+    }
+
+    @FunctionalInterface
+    public interface Start {
+        void onStartOfPlayerTick(PlayerEntity player);
+    }
+}

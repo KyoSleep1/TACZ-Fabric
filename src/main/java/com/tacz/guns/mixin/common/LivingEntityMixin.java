@@ -6,9 +6,13 @@ import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.entity.shooter.*;
 import com.tacz.guns.entity.sync.ModSyncedEntityData;
+import com.tacz.guns.event.LivingEntityEvents;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,6 +24,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
+    @Shadow @Nullable protected PlayerEntity attackingPlayer;
     private final @Unique LivingEntity tacz$shooter = (LivingEntity) (Object) this;
     private final @Unique ShooterDataHolder tacz$data = new ShooterDataHolder();
     private final @Unique LivingEntityDrawGun tacz$draw = new LivingEntityDrawGun(tacz$shooter, tacz$data);
@@ -163,6 +168,14 @@ public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
             ModSyncedEntityData.IS_AIMING_KEY.setValue(tacz$shooter, this.tacz$data.isAiming);
             ModSyncedEntityData.SPRINT_TIME_KEY.setValue(tacz$shooter, this.tacz$data.sprintTimeS);
         }
+    }
+
+    @ModifyVariable(method = "takeKnockback", at = @At("STORE"), ordinal = 0, argsOnly = true)
+    private double port_lib$takeKnockback(double f) {
+        if (attackingPlayer != null)
+            return LivingEntityEvents.KNOCKBACK_STRENGTH.invoker().onLivingEntityTakeKnockback(f, attackingPlayer);
+
+        return f;
     }
 
     @Override
