@@ -35,7 +35,7 @@ public class NetworkHandler {
 
     public static void init() {
         if (EnvironmentUtil.isClient()) {
-            NetworkClientInitializer.init();
+            NetworkClientHandler.init();
         }
     }
 }

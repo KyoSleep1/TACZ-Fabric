@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 @SuppressWarnings("deprecation")
-public class NetworkClientInitializer {
+public class NetworkClientHandler {
 
     public static final S2CPacketType<SoundS2CPacket> SOUND = SimpleNetworking
             .serverToClient(Identifier.of(GunMod.MOD_ID, "sound"), SoundS2CPacket::new);
