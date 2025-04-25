@@ -2,8 +2,8 @@ package com.tacz.guns.inventory.tooltip;
 
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.util.Identifier;
 
 public class GunTooltip implements TooltipData {

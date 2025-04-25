@@ -12,17 +12,15 @@ import com.tacz.guns.init.ModItems;
 import com.tacz.guns.inventory.tooltip.AmmoBoxTooltip;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.slot.Slot;
@@ -39,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class AmmoBoxItem extends Item implements DyeableItem, AmmoBoxItemDataAccessor {
-    public static final Identifier PROPERTY_NAME = new Identifier(GunMod.MOD_ID, "ammo_statue");
+    public static final Identifier PROPERTY_NAME = Identifier.of(GunMod.MOD_ID, "ammo_statue");
 
     public static final int IRON_LEVEL = 0;
     public static final int GOLD_LEVEL = 1;

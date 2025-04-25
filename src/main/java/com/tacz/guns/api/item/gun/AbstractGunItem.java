@@ -13,11 +13,11 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -143,11 +143,8 @@ public abstract class AbstractGunItem extends Item implements IGun {
         return ActionResult.SUCCESS;
     }
 
-    /**
-     * The method has a generic implementation, placed here
-     */
+
     @Override
-    @NotNull
     public Optional<TooltipData> getTooltipData(ItemStack stack) {
         if (stack.getItem() instanceof IGun iGun) {
             Optional<CommonGunIndex> optional = TimelessAPI.getCommonGunIndex(this.getGunId(stack));
