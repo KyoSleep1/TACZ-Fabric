@@ -1,26 +1,21 @@
 package com.tacz.guns.network.packets.s2c;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.entity.sync.core.DataEntry;
 import com.tacz.guns.entity.sync.core.SyncedEntityData;
 import com.tacz.guns.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateEntityDataS2CPacket implements FabricPacket {
-    public static final PacketType<UpdateEntityDataS2CPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "update_entity_data"), UpdateEntityDataS2CPacket::new);
+public class UpdateEntityDataS2CPacket implements HandledPacket<PlayerEntity> {
 
     private final int entityId;
     private final List<DataEntry<?, ?>> entries;
@@ -35,18 +30,14 @@ public class UpdateEntityDataS2CPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
+    public void toBuffer(PacketByteBuf buf) {
         buf.writeVarInt(entityId);
         buf.writeVarInt(entries.size());
         entries.forEach(entry -> entry.write(buf));
     }
 
     @Override
-    public PacketType<?> getType() {
-        return TYPE;
-    }
-
-    public void handle(PlayerEntity ignoredPlayer, PacketSender ignoredSender) {
+    public void handle(PlayerEntity ignoredPlayer) {
         if (EnvironmentUtil.isClient()) {
             onHandle(this);
         }

@@ -1,30 +1,27 @@
 package com.tacz.guns.network.packets.s2c.event;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.api.LogicalSide;
 import com.tacz.guns.api.event.common.GunFireSelectEvent;
 import com.tacz.guns.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryByteBuf;
 
-public class GunFireSelectS2CPacket implements FabricPacket {
-    public static final PacketType<GunFireSelectS2CPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "gun_fire_select"), GunFireSelectS2CPacket::new);
+public class GunFireSelectS2CPacket implements HandledPacket<PlayerEntity> {
 
     private final int shooterId;
     private final ItemStack gunItemStack;
 
     public GunFireSelectS2CPacket(PacketByteBuf buf) {
-        this(buf.readVarInt(), buf.readItemStack());
+        this(buf.readVarInt(), buf instanceof RegistryByteBuf registryByteBuf ?
+                ItemStack.OPTIONAL_PACKET_CODEC.decode(registryByteBuf) : null);
     }
 
     public GunFireSelectS2CPacket(int shooterId, ItemStack gunItemStack) {
@@ -33,20 +30,18 @@ public class GunFireSelectS2CPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
+    public void toBuffer(PacketByteBuf buf) {
         buf.writeVarInt(shooterId);
-        buf.writeItemStack(gunItemStack);
-    }
-
-    public void handle(PlayerEntity ignoredPlayer, PacketSender ignoredSender) {
-        if (EnvironmentUtil.isClient()) {
-            doClientEvent(this);
+        if (buf instanceof RegistryByteBuf registryByteBuf) {
+            ItemStack.OPTIONAL_PACKET_CODEC.encode(registryByteBuf, gunItemStack);
         }
     }
 
     @Override
-    public PacketType<?> getType() {
-        return TYPE;
+    public void handle(PlayerEntity ignoredPlayer) {
+        if (EnvironmentUtil.isClient()) {
+            doClientEvent(this);
+        }
     }
 
     @Environment(EnvType.CLIENT)

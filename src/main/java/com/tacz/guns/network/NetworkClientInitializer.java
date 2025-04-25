@@ -1,54 +1,50 @@
 package com.tacz.guns.network;
 
-import com.tacz.guns.mixin.client.network.ClientLoginNetworkHandlerAccessor;
+import com.sollace.fabwork.api.packets.S2CPacketType;
+import com.sollace.fabwork.api.packets.SimpleNetworking;
+import com.tacz.guns.GunMod;
 import com.tacz.guns.network.packets.s2c.*;
 import com.tacz.guns.network.packets.s2c.event.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.PacketByteBuf;
-
-import java.util.concurrent.CompletableFuture;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
+@SuppressWarnings("deprecation")
 public class NetworkClientInitializer {
 
-    @Environment(EnvType.CLIENT)
-    public static void init() {
-        ClientPlayNetworking.registerGlobalReceiver(SoundS2CPacket.TYPE, SoundS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(CraftS2CPacket.TYPE, CraftS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(RefreshRefitScreenS2CPacket.TYPE, RefreshRefitScreenS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(SwapItemS2CPacket.TYPE, SwapItemS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(LevelUpS2CPacket.TYPE, LevelUpS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(UpdateEntityDataS2CPacket.TYPE, UpdateEntityDataS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(SyncGunPackS2CPacket.TYPE, SyncGunPackS2CPacket::handle);
+    public static final S2CPacketType<SoundS2CPacket> SOUND = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "sound"), SoundS2CPacket::new);
+    public static final S2CPacketType<CraftS2CPacket> CRAFT = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "craft"), CraftS2CPacket::new);
+    public static final S2CPacketType<RefreshRefitScreenS2CPacket> REFRESH_REFIT_SCREEN = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "refresh_refit_screen"), RefreshRefitScreenS2CPacket::new);
+    public static final S2CPacketType<SwapItemS2CPacket> SWAP_ITEM = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "swap_item"), SwapItemS2CPacket::new);
+    public static final S2CPacketType<LevelUpS2CPacket> LEVEL_UP = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "level_up"), LevelUpS2CPacket::new);
+    public static final S2CPacketType<UpdateEntityDataS2CPacket> UPDATE_ENTITY_DATA = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "update_entity_data"), UpdateEntityDataS2CPacket::new);
+    public static final S2CPacketType<SyncGunPackS2CPacket> SYNC_GUN_PACK = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "sync_gun_pack"), SyncGunPackS2CPacket::new);
+    public static final S2CPacketType<GunHurtS2CPacket> GUN_HURT = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_hurt"), GunHurtS2CPacket::new);
+    public static final S2CPacketType<GunKillS2CPacket> GUN_KILL = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_kill"), GunKillS2CPacket::new);
+    public static final S2CPacketType<GunDrawS2CPacket> GUN_DRAW = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_draw"), GunDrawS2CPacket::new);
+    public static final S2CPacketType<GunFireS2CPacket> GUN_FIRE = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_fire"), GunFireS2CPacket::new);
+    public static final S2CPacketType<GunFireSelectS2CPacket> GUN_FIRE_SELECT = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_fire_select"), GunFireSelectS2CPacket::new);
+    public static final S2CPacketType<GunMeleeS2CPacket> GUN_MELEE = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_melee"), GunMeleeS2CPacket::new);
+    public static final S2CPacketType<GunReloadS2CPacket> GUN_RELOAD = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_reload"), GunReloadS2CPacket::new);
+    public static final S2CPacketType<GunShootS2CPacket> GUN_SHOOT = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_shoot"), GunShootS2CPacket::new);
 
-        ClientPlayNetworking.registerGlobalReceiver(GunHurtS2CPacket.TYPE, GunHurtS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunKillS2CPacket.TYPE, GunKillS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunDrawS2CPacket.TYPE, GunDrawS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunFireS2CPacket.TYPE, GunFireS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunFireSelectS2CPacket.TYPE, GunFireSelectS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunMeleeS2CPacket.TYPE, GunMeleeS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunReloadS2CPacket.TYPE, GunReloadS2CPacket::handle);
-        ClientPlayNetworking.registerGlobalReceiver(GunShootS2CPacket.TYPE, GunShootS2CPacket::handle);
-    }
-
     @Environment(EnvType.CLIENT)
-    static <T extends IHandshakeMessage> void registerHandshake(PacketType<T> type) {
-        ClientLoginNetworking.registerGlobalReceiver(type.getId(), (client, handler, buf, listenerAdder) -> {
-            T packet = type.read(buf);
-            ClientConnection connection = ((ClientLoginNetworkHandlerAccessor) handler).getConnection();
-            IHandshakeMessage.IResponsePacket responsePacket = packet.handle(connection, listenerAdder);
-            PacketByteBuf response = PacketByteBufs.create();
-            if (responsePacket != null) {
-                response.writeIdentifier(responsePacket.getId());
-                responsePacket.write(response);
-            }
-            return CompletableFuture.completedFuture(response);
-        });
+    public static final void init() {
     }
 }

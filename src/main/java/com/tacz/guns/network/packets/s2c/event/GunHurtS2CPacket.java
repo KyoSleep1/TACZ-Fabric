@@ -1,14 +1,11 @@
 package com.tacz.guns.network.packets.s2c.event;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.api.LogicalSide;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -18,8 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class GunHurtS2CPacket implements FabricPacket {
-    public static final PacketType<GunHurtS2CPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "gun_hurt"), GunHurtS2CPacket::new);
+public class GunHurtS2CPacket implements HandledPacket<PlayerEntity> {
 
     private final int hurtEntityId;
     private final int attackerId;
@@ -42,7 +38,7 @@ public class GunHurtS2CPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
+    public void toBuffer(PacketByteBuf buf) {
         buf.writeInt(hurtEntityId);
         buf.writeInt(attackerId);
         buf.writeIdentifier(gunId);
@@ -51,15 +47,11 @@ public class GunHurtS2CPacket implements FabricPacket {
         buf.writeFloat(headshotMultiplier);
     }
 
-    public void handle(PlayerEntity ignoredPlayer, PacketSender ignoredSender) {
+    @Override
+    public void handle(PlayerEntity ignoredPlayer) {
         if (EnvironmentUtil.isClient()) {
             doClientEvent(this);
         }
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return TYPE;
     }
 
     @Environment(EnvType.CLIENT)

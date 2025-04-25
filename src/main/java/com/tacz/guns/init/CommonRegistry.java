@@ -1,7 +1,6 @@
 package com.tacz.guns.init;
 
 import com.tacz.guns.entity.sync.ModSyncedEntityData;
-import com.tacz.guns.network.HandshakeNetworking;
 import com.tacz.guns.network.NetworkHandler;
 
 public class CommonRegistry {

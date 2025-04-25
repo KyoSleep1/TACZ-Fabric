@@ -7,6 +7,7 @@ import com.tacz.guns.network.packets.c2s.*;
 import com.tacz.guns.util.EnvironmentUtil;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("deprecation")
 public class NetworkHandler {
 
     public static C2SPacketType<PlayerShootC2SPacket> PLAYER_SHOOT = SimpleNetworking

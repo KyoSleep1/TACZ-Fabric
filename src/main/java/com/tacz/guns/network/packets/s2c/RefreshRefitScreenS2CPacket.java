@@ -1,21 +1,16 @@
 package com.tacz.guns.network.packets.s2c;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.client.gui.GunRefitScreen;
 import com.tacz.guns.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 
-public class RefreshRefitScreenS2CPacket implements FabricPacket {
-    public static final PacketType<RefreshRefitScreenS2CPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "refresh_refit_screen"), RefreshRefitScreenS2CPacket::new);
+public class RefreshRefitScreenS2CPacket implements HandledPacket<PlayerEntity> {
 
     public RefreshRefitScreenS2CPacket(PacketByteBuf buf) {
         this();
@@ -25,18 +20,14 @@ public class RefreshRefitScreenS2CPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-    }
-
-    public void handle(PlayerEntity ignoredPlayer, PacketSender ignoredSender) {
-        if (EnvironmentUtil.isClient()) {
-            updateScreen();
-        }
+    public void toBuffer(PacketByteBuf buf) {
     }
 
     @Override
-    public PacketType<?> getType() {
-        return TYPE;
+    public void handle(PlayerEntity ignoredPlayer) {
+        if (EnvironmentUtil.isClient()) {
+            updateScreen();
+        }
     }
 
     @Environment(EnvType.CLIENT)

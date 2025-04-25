@@ -1,17 +1,13 @@
 package com.tacz.guns.network.packets.s2c;
 
-import com.tacz.guns.GunMod;
+import com.sollace.fabwork.api.packets.HandledPacket;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.util.EnvironmentUtil;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
-public class SoundS2CPacket implements FabricPacket {
-    public static final PacketType<SoundS2CPacket> TYPE = PacketType.create(new Identifier(GunMod.MOD_ID, "sound"), SoundS2CPacket::new);
+public class SoundS2CPacket implements HandledPacket<PlayerEntity> {
 
     private final int entityId;
     private final Identifier gunId;
@@ -34,7 +30,7 @@ public class SoundS2CPacket implements FabricPacket {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
+    public void toBuffer(PacketByteBuf buf) {
         buf.writeVarInt(entityId);
         buf.writeIdentifier(gunId);
         buf.writeString(soundName);
@@ -43,15 +39,11 @@ public class SoundS2CPacket implements FabricPacket {
         buf.writeInt(distance);
     }
 
-    public void handle(PlayerEntity ignoredPlayer, PacketSender ignoredSender) {
+    @Override
+    public void handle(PlayerEntity ignoredPlayer) {
         if (EnvironmentUtil.isClient()) {
             SoundPlayManager.playMessageSound(this);
         }
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return TYPE;
     }
 
     public int getEntityId() {
