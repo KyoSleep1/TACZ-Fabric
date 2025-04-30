@@ -39,7 +39,7 @@ public class CommonGunPackLoader {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
             .registerTypeAdapter(Pair.class, new PairSerializer())
-            .registerTypeAdapter(GunSmithTableIngredient.class, GunSmithTableIngredientSerializer.CODEC)
+            .registerTypeAdapter(GunSmithTableIngredient.class, new GunSmithTableIngredientSerializer())
             .registerTypeAdapter(GunSmithTableResult.class, new GunSmithTableResultSerializer())
             .registerTypeAdapter(ExtraDamage.DistanceDamagePair.class, new DistanceDamagePairSerializer())
             .registerTypeAdapter(Vec3d.class, new Vec3Serializer())
