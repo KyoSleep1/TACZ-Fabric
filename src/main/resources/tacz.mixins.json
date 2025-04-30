@@ -7,7 +7,6 @@
     "client.network.ClientLoginNetworkHandlerAccessor",
     "common.EntityMixin",
     "common.EntityTypeMixin",
-    "common.ItemMixinForTweakeroo",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
     "common.PlayerMixin",

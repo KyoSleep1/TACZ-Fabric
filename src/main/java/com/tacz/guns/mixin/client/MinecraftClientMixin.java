@@ -137,8 +137,8 @@ public class MinecraftClientMixin {
         }
     }
 
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;reset()V"))
-    private void disconnect(Screen screen, CallbackInfo ci) {
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;reset()V"))
+    private void disconnect(Screen disconnectionScreen, boolean transferring, CallbackInfo ci) {
         InventoryEvent.onPlayerLoggedOut();
     }
 
