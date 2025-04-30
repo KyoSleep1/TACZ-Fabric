@@ -13,7 +13,7 @@ import com.tacz.guns.resource.pojo.AmmoIndexPOJO;
 import com.tacz.guns.util.ColorHex;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -148,7 +148,8 @@ public class ClientAmmoIndex {
                 AmmoParticle particle = display.getParticle();
                 String name = particle.getName();
                 if (StringUtils.isNoneBlank()) {
-                    particle.setParticleOptions(ParticleEffectArgumentType.readParameters(new StringReader(name), Registries.PARTICLE_TYPE.getReadOnlyWrapper()));
+                    particle.setParticleOptions(ParticleEffectArgumentType.readParameters(new StringReader(name),
+                            BuiltinRegistries.createWrapperLookup()));
                     Preconditions.checkArgument(particle.getCount() > 0, "particle count must be greater than 0");
                     Preconditions.checkArgument(particle.getLifeTime() > 0, "particle life time must be greater than 0");
                     index.particle = particle;

@@ -41,14 +41,15 @@ public class GunAttachmentSlot extends ButtonWidget implements IStackTooltip {
     }
 
     @Override
-    public void renderButton(@NotNull DrawContext graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(@NotNull DrawContext graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.isSelected()) {
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             int yOffset = this.getY() + 20;
             if (this.selected && !attachmentItem.isEmpty()) {
                 yOffset = this.getY() + 30;
             }
-            graphics.drawCenteredTextWithShadow(font, Text.translatable(nameKey), this.getX() + this.getWidth() / 2, yOffset, Formatting.WHITE.getColorValue());
+            graphics.drawCenteredTextWithShadow(font, Text.translatable(nameKey), this.getX()
+                    + this.getWidth() / 2, yOffset, Formatting.WHITE.getColorValue());
         }
         ItemStack gunItem = inventory.getStack(gunItemIndex);
         IGun iGun = IGun.getIGunOrNull(gunItem);

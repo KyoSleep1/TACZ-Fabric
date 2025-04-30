@@ -5,10 +5,11 @@ import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * No gun logic is included here, only the various nbt accesses for guns. <br>
@@ -190,17 +191,10 @@ public interface IGun {
 
     /**
      * Gets the accessories of the specified type for the current firearm
-     */
-    @NotNull
-    ItemStack getAttachment(ItemStack gun, AttachmentType type);
-
-    /**
-     * Get the NBT data of the current firearm for the specified type of accessory.
      *
-     * @return If null, then there is no accessory data
+     * @return Empty, if there is no accessory data
      */
-    @Nullable
-    NbtCompound getAttachmentTag(ItemStack gun, AttachmentType type);
+    ItemStack getAttachment(ItemStack gun, AttachmentType type);
 
     /**
      * Get the accessory ID of the gun

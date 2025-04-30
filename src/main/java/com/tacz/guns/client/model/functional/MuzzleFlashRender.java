@@ -84,7 +84,7 @@ public class MuzzleFlashRender implements IFunctionalRenderer {
                 poseStack2.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(muzzleFlashRandomRotate));
                 poseStack2.translate(0, -1, 0);
                 RenderLayer renderTypeBg = RenderLayer.getEntityTranslucent(muzzleFlash.getTexture());
-                MUZZLE_FLASH_MODEL.render(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                MUZZLE_FLASH_MODEL.render(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 0xFFFFFFFF);
             }
             poseStack2.pop();
 
@@ -95,7 +95,7 @@ public class MuzzleFlashRender implements IFunctionalRenderer {
                 poseStack2.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(muzzleFlashRandomRotate));
                 poseStack2.translate(0, -0.9, 0);
                 RenderLayer renderTypeLight = RenderLayer.getEnergySwirl(muzzleFlash.getTexture(), 1, 1);
-                MUZZLE_FLASH_MODEL.render(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                MUZZLE_FLASH_MODEL.render(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 0xFFFFFFFF);
             }
             poseStack2.pop();
         }

@@ -54,8 +54,8 @@ public class MouseMixin {
             if (optional.isPresent()) {
                 float[] zoom = optional.get().getZoom();
                 if (zoom != null && zoom.length > 0) {
-                    NbtCompound attachmentTag = iGun.getAttachmentTag(mainHandItem, AttachmentType.SCOPE);
-                    zoomLevel = zoom[AttachmentItemDataAccessor.getZoomNumberFromTag(attachmentTag) % zoom.length];
+                    ItemStack attachmentTag = iGun.getAttachment(mainHandItem, AttachmentType.SCOPE);
+                    zoomLevel = zoom[AttachmentItemDataAccessor.getZoomNumber(attachmentTag) % zoom.length];
                 }
             }
         }

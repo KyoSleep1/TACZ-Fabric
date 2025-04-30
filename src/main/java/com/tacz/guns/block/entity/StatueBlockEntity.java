@@ -12,6 +12,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -70,30 +71,25 @@ public class StatueBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        if (tag.contains(ITEM_TAG, NbtElement.COMPOUND_TYPE)) {
-            this.gunItem = ItemStack.fromNbt(tag.getCompound(ITEM_TAG));
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        if (nbt.contains(ITEM_TAG, NbtElement.COMPOUND_TYPE)) {
+            this.gunItem = ItemStack.fromNbt(registryLookup, nbt.getCompound(ITEM_TAG)).orElse(null);
         }
     }
 
     @Override
-    protected void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        tag.put(ITEM_TAG, gunItem.writeNbt(new NbtCompound()));
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        nbt.put(ITEM_TAG, gunItem.encode(registryLookup));
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound tag = super.toInitialChunkDataNbt();
-        tag.put(ITEM_TAG, gunItem.writeNbt(new NbtCompound()));
-        return tag;
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        NbtCompound tag = super.toInitialChunkDataNbt(registryLookup);
+        tag.put(ITEM_TAG, gunItem.encode(registryLookup));
+        return super.toInitialChunkDataNbt(registryLookup);
     }
-
-//    @Override
-//    public AABB getRenderBoundingBox() {
-//        return new AABB(pos.offset(-2, 0, -2), pos.offset(2, 2, 2));
-//    }
 
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {

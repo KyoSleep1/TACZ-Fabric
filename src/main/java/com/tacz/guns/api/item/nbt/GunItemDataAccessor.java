@@ -8,42 +8,35 @@ import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.init.ModItemComponents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public interface GunItemDataAccessor extends IGun {
-    String GUN_ID_TAG = "GunId";
-    String GUN_FIRE_MODE_TAG = "GunFireMode";
-    String GUN_HAS_BULLET_IN_BARREL = "HasBulletInBarrel";
-    String GUN_CURRENT_AMMO_COUNT_TAG = "GunCurrentAmmoCount";
-    String GUN_ATTACHMENT_BASE = "Attachment";
-    String GUN_EXP_TAG = "GunLevelExp";
-    String GUN_DUMMY_AMMO = "DummyAmmo";
-    String GUN_MAX_DUMMY_AMMO = "MaxDummyAmmo";
-    String GUN_ATTACHMENT_LOCK = "AttachmentLock";
 
     @Override
     default boolean useDummyAmmo(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        return nbt.contains(GUN_DUMMY_AMMO, NbtElement.INT_TYPE);
+        return gun.contains(ModItemComponents.GUN_DUMMY_AMMO);
     }
 
     @Override
+    @SuppressWarnings("all")
     default int getDummyAmmoAmount(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        return Math.max(0, nbt.getInt(GUN_DUMMY_AMMO));
+        if (!this.useDummyAmmo(gun)) {
+            return 0;
+        }
+        return Math.max(0, gun.get(ModItemComponents.GUN_DUMMY_AMMO));
     }
 
     @Override
     default void setDummyAmmoAmount(ItemStack gun, int amount) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        nbt.putInt(GUN_DUMMY_AMMO, Math.max(amount, 0));
+        gun.set(ModItemComponents.GUN_DUMMY_AMMO, Math.max(amount, 0));
     }
 
     @Override
@@ -54,79 +47,61 @@ public interface GunItemDataAccessor extends IGun {
         if (!hasMaxDummyAmmo(gun)) {
             return;
         }
-        NbtCompound nbt = gun.getOrCreateNbt();
         amount = Math.min(getDummyAmmoAmount(gun) + amount, getMaxDummyAmmoAmount(gun));
-        nbt.putInt(GUN_DUMMY_AMMO, Math.max(amount, 0));
+        this.setDummyAmmoAmount(gun, Math.max(amount, 0));
     }
 
     @Override
     default boolean hasMaxDummyAmmo(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        return nbt.contains(GUN_MAX_DUMMY_AMMO, NbtElement.INT_TYPE);
+        return gun.contains(ModItemComponents.GUN_MAX_DUMMY_AMMO);
     }
 
     @Override
+    @SuppressWarnings("all")
     default int getMaxDummyAmmoAmount(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        return Math.max(0, nbt.getInt(GUN_MAX_DUMMY_AMMO));
+        if (!this.hasMaxDummyAmmo(gun)) {
+            return 0;
+        }
+        return Math.max(0, gun.get(ModItemComponents.GUN_MAX_DUMMY_AMMO));
     }
 
     @Override
     default void setMaxDummyAmmoAmount(ItemStack gun, int amount) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        nbt.putInt(GUN_MAX_DUMMY_AMMO, Math.max(amount, 0));
+        gun.set(ModItemComponents.GUN_MAX_DUMMY_AMMO, Math.max(amount, 0));
     }
 
     @Override
     default boolean hasAttachmentLock(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_ATTACHMENT_LOCK, NbtElement.BYTE_TYPE)) {
-            return nbt.getBoolean(GUN_ATTACHMENT_LOCK);
-        }
-        return false;
+        return gun.getOrDefault(ModItemComponents.GUN_ATTACHMENT_LOCK, false);
     }
 
     @Override
     default void setAttachmentLock(ItemStack gun, boolean lock) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        nbt.putBoolean(GUN_ATTACHMENT_LOCK, lock);
+        gun.set(ModItemComponents.GUN_ATTACHMENT_LOCK, lock);
     }
 
     @Override
     @NotNull
     default Identifier getGunId(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_ID_TAG, NbtElement.STRING_TYPE)) {
-            Identifier gunId = Identifier.tryParse(nbt.getString(GUN_ID_TAG));
-            return Objects.requireNonNullElse(gunId, DefaultAssets.EMPTY_GUN_ID);
-        }
-        return DefaultAssets.EMPTY_GUN_ID;
+        return gun.getOrDefault(ModItemComponents.GUN_ID, DefaultAssets.EMPTY_GUN_ID);
     }
 
     @Override
     default void setGunId(ItemStack gun, @Nullable Identifier gunId) {
-        NbtCompound nbt = gun.getOrCreateNbt();
         if (gunId != null) {
-            nbt.putString(GUN_ID_TAG, gunId.toString());
+            gun.set(ModItemComponents.GUN_ID, gunId);
         }
     }
 
     @Override
     default int getLevel(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_EXP_TAG, NbtElement.INT_TYPE)) {
-            return getLevel(nbt.getInt(GUN_EXP_TAG));
-        }
-        return 0;
+        int exp = getExp(gun);
+        return getLevel(exp);
     }
 
     @Override
     default int getExp(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_EXP_TAG, NbtElement.INT_TYPE)) {
-            return nbt.getInt(GUN_EXP_TAG);
-        }
-        return 0;
+        return gun.getOrDefault(ModItemComponents.GUN_EXP, 0);
     }
 
     @Override
@@ -153,36 +128,22 @@ public interface GunItemDataAccessor extends IGun {
 
     @Override
     default FireMode getFireMode(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_FIRE_MODE_TAG, NbtElement.STRING_TYPE)) {
-            return FireMode.valueOf(nbt.getString(GUN_FIRE_MODE_TAG));
-        }
-        return FireMode.UNKNOWN;
+        return gun.getOrDefault(ModItemComponents.GUN_FIRE_MODE, FireMode.UNKNOWN);
     }
 
     @Override
     default void setFireMode(ItemStack gun, @Nullable FireMode fireMode) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (fireMode != null) {
-            nbt.putString(GUN_FIRE_MODE_TAG, fireMode.name());
-            return;
-        }
-        nbt.putString(GUN_FIRE_MODE_TAG, FireMode.UNKNOWN.name());
+        gun.set(ModItemComponents.GUN_FIRE_MODE, Objects.requireNonNullElse(fireMode, FireMode.UNKNOWN));
     }
 
     @Override
     default int getCurrentAmmoCount(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_CURRENT_AMMO_COUNT_TAG, NbtElement.INT_TYPE)) {
-            return nbt.getInt(GUN_CURRENT_AMMO_COUNT_TAG);
-        }
-        return 0;
+        return gun.getOrDefault(ModItemComponents.GUN_CURRENT_AMMO_COUNT, 0);
     }
 
     @Override
     default void setCurrentAmmoCount(ItemStack gun, int ammoCount) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        nbt.putInt(GUN_CURRENT_AMMO_COUNT_TAG, Math.max(ammoCount, 0));
+        gun.set(ModItemComponents.GUN_CURRENT_AMMO_COUNT, Math.max(ammoCount, 0));
     }
 
     @Override
@@ -191,44 +152,30 @@ public interface GunItemDataAccessor extends IGun {
     }
 
     @Override
-    @Nullable
-    default NbtCompound getAttachmentTag(ItemStack gun, AttachmentType type) {
-        if (!allowAttachmentType(gun, type)) {
-            return null;
-        }
-        NbtCompound nbt = gun.getOrCreateNbt();
-        String key = GUN_ATTACHMENT_BASE + type.name();
-        if (nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-            NbtCompound allItemStackTag = nbt.getCompound(key);
-            if (allItemStackTag.contains("tag", NbtElement.COMPOUND_TYPE)) {
-                return allItemStackTag.getCompound("tag");
-            }
-        }
-        return null;
-    }
-
-    @Override
-    @NotNull
     default ItemStack getAttachment(ItemStack gun, AttachmentType type) {
-        if (!allowAttachmentType(gun, type)) {
-            return ItemStack.EMPTY;
+        if (!this.allowAttachmentType(gun, type)) return ItemStack.EMPTY;
+
+        final List<ItemStack> attachments = gun.get(ModItemComponents.GUN_ATTACHMENTS);
+        if (attachments == null) return ItemStack.EMPTY;
+
+        for (ItemStack attachment : attachments) {
+            final AttachmentType componentType = attachment.getOrDefault(ModItemComponents.ATTACHMENT_TYPE,
+                    null);
+            if (componentType == null) continue;
+            if (componentType == type) return attachment;
         }
-        NbtCompound nbt = gun.getOrCreateNbt();
-        String key = GUN_ATTACHMENT_BASE + type.name();
-        if (nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-            return ItemStack.fromNbt(nbt.getCompound(key));
-        }
+
         return ItemStack.EMPTY;
     }
 
     @Override
     @NotNull
     default Identifier getAttachmentId(ItemStack gun, AttachmentType type) {
-        NbtCompound attachmentTag = this.getAttachmentTag(gun, type);
-        if (attachmentTag != null) {
-            return AttachmentItemDataAccessor.getAttachmentIdFromTag(attachmentTag);
+        final ItemStack stack = this.getAttachment(gun, type);
+        if (stack.isEmpty()) {
+            return DefaultAssets.EMPTY_ATTACHMENT_ID;
         }
-        return DefaultAssets.EMPTY_ATTACHMENT_ID;
+        return stack.getOrDefault(ModItemComponents.ATTACHMENT_ID, DefaultAssets.EMPTY_ATTACHMENT_ID);
     }
 
     @Override
@@ -236,15 +183,13 @@ public interface GunItemDataAccessor extends IGun {
         if (!allowAttachment(gun, attachment)) {
             return;
         }
-        IAttachment iAttachment = IAttachment.getIAttachmentOrNull(attachment);
+        final IAttachment iAttachment = IAttachment.getIAttachmentOrNull(attachment);
         if (iAttachment == null) {
             return;
         }
-        NbtCompound nbt = gun.getOrCreateNbt();
-        String key = GUN_ATTACHMENT_BASE + iAttachment.getType(attachment).name();
-        NbtCompound attachmentTag = new NbtCompound();
-        attachment.writeNbt(attachmentTag);
-        nbt.put(key, attachmentTag);
+        final List<ItemStack> attachments = gun.getOrDefault(ModItemComponents.GUN_ATTACHMENTS, new ArrayList<>());
+        attachments.add(attachment);
+        gun.set(ModItemComponents.GUN_ATTACHMENTS, attachments);
     }
 
     @Override
@@ -252,11 +197,11 @@ public interface GunItemDataAccessor extends IGun {
         if (!allowAttachmentType(gun, type)) {
             return;
         }
-        NbtCompound nbt = gun.getOrCreateNbt();
-        String key = GUN_ATTACHMENT_BASE + type.name();
-        NbtCompound attachmentTag = new NbtCompound();
-        ItemStack.EMPTY.writeNbt(attachmentTag);
-        nbt.put(key, attachmentTag);
+        final List<ItemStack> attachments = gun.getOrDefault(ModItemComponents.GUN_ATTACHMENTS, new ArrayList<>());
+        final ItemStack attachment = this.getAttachment(gun, type);
+        if (attachment.isEmpty()) return;
+        attachments.remove(attachment);
+        gun.set(ModItemComponents.GUN_ATTACHMENTS, attachments);
     }
 
     @Override
@@ -264,8 +209,8 @@ public interface GunItemDataAccessor extends IGun {
         float zoom = 1;
         Identifier scopeId = this.getAttachmentId(gunItem, AttachmentType.SCOPE);
         if (!DefaultAssets.isEmptyAttachmentId(scopeId)) {
-            NbtCompound attachmentTag = this.getAttachmentTag(gunItem, AttachmentType.SCOPE);
-            int zoomNumber = AttachmentItemDataAccessor.getZoomNumberFromTag(attachmentTag);
+            final ItemStack stack = this.getAttachment(gunItem, AttachmentType.SCOPE);
+            int zoomNumber = AttachmentItemDataAccessor.getZoomNumber(stack);
             float[] zooms = TimelessAPI.getClientAttachmentIndex(scopeId).map(ClientAttachmentIndex::getZoom).orElse(null);
             if (zooms != null) {
                 zoom = zooms[zoomNumber % zooms.length];
@@ -279,16 +224,11 @@ public interface GunItemDataAccessor extends IGun {
 
     @Override
     default boolean hasBulletInBarrel(ItemStack gun) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        if (nbt.contains(GUN_HAS_BULLET_IN_BARREL, NbtElement.BYTE_TYPE)) {
-            return nbt.getBoolean(GUN_HAS_BULLET_IN_BARREL);
-        }
-        return false;
+        return gun.getOrDefault(ModItemComponents.GUN_HAS_BULLET_IN_BARREL, false);
     }
 
     @Override
     default void setBulletInBarrel(ItemStack gun, boolean bulletInBarrel) {
-        NbtCompound nbt = gun.getOrCreateNbt();
-        nbt.putBoolean(GUN_HAS_BULLET_IN_BARREL, bulletInBarrel);
+        gun.set(ModItemComponents.GUN_HAS_BULLET_IN_BARREL, bulletInBarrel);
     }
 }

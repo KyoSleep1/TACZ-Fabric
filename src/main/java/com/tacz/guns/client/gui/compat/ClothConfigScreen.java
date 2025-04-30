@@ -38,7 +38,7 @@ public class ClothConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
         message.drawCenterWithShadow(context, width / 2, 80);
         super.render(context, mouseX, mouseY, delta);
     }

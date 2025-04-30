@@ -34,7 +34,7 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
                     poseStack.translate(0.5, 1.5, 0.5);
                     poseStack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
                     VertexConsumer buffer = pBuffer.getBuffer(RenderLayer.getEntityTranslucent(attachmentIndex.getSlotTexture()));
-                    SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                    SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 0xFFFFFFFF);
                     return;
                 }
                 poseStack.translate(0.5, 2, 0.5);
@@ -60,7 +60,7 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
                 VertexConsumer buffer = pBuffer.getBuffer(RenderLayer.getEntityTranslucent(MissingSprite.getMissingSpriteId()));
-                SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 0xFFFFFFFF);
             });
             poseStack.pop();
         }
@@ -89,7 +89,7 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
                 poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
             }
             VertexConsumer buffer = pBuffer.getBuffer(RenderLayer.getEntityTranslucent(attachmentIndex.getSlotTexture()));
-            SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 0xFFFFFFFF);
         }
     }
 }

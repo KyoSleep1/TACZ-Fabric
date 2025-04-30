@@ -4,6 +4,7 @@ import com.tacz.guns.entity.TargetMinecart;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -36,7 +37,7 @@ public class TargetMinecartItem extends Item {
                     yOffset = 0.5;
                 }
                 TargetMinecart targetMinecart = new TargetMinecart(level, (double) blockpos.getX() + 0.5, (double) blockpos.getY() + 0.0625 + yOffset, (double) blockpos.getZ() + 0.5);
-                if (itemstack.hasCustomName()) {
+                if (itemstack.contains(DataComponentTypes.CUSTOM_NAME)) {
                     targetMinecart.setCustomName(itemstack.getName());
                 }
                 level.spawnEntity(targetMinecart);

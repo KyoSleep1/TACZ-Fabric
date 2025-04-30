@@ -43,7 +43,7 @@ public class CommonAmmoIndexLoader {
             }
             try (InputStream stream = zipFile.getInputStream(entry)) {
                 String json = IOReader.toString(stream, StandardCharsets.UTF_8);
-                Identifier registryName = new Identifier(namespace, id);
+                Identifier registryName = Identifier.of(namespace, id);
                 loadAmmoFromJsonString(registryName, json);
                 CommonGunPackNetwork.addData(DataType.AMMO_INDEX, registryName, json);
             } catch (IllegalArgumentException | JsonSyntaxException | JsonIOException exception) {

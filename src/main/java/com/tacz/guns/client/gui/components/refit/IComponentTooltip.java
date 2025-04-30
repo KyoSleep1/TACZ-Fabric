@@ -1,10 +1,11 @@
 package com.tacz.guns.client.gui.components.refit;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 
 import java.util.List;
@@ -15,9 +16,11 @@ public interface IComponentTooltip {
      * 获取物品的文本提示
      */
     static List<Text> getTooltipFromItem(ItemStack stack) {
-        GameOptions options = MinecraftClient.getInstance().options;
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        return stack.getTooltip(player, options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
+        final ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player == null) return List.of();
+        final GameOptions options = MinecraftClient.getInstance().options;
+        return stack.getTooltip(Item.TooltipContext.create(player.clientWorld), player,
+                options.advancedItemTooltips ? TooltipType.Default.ADVANCED : TooltipType.Default.BASIC);
     }
 
     /**

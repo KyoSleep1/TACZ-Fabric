@@ -1,7 +1,5 @@
 package com.tacz.guns.client.renderer.entity;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
 import com.tacz.guns.client.model.bedrock.BedrockPart;
 import com.tacz.guns.client.resource.InternalAssetLoader;
@@ -17,10 +15,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MinecartEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.math.RotationAxis;
 
 import java.util.Optional;
@@ -59,17 +55,12 @@ public class TargetMinecartRenderer extends MinecartEntityRenderer<TargetMinecar
             stack.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(90));
             RenderLayer renderType = RenderLayer.getEntityTranslucent(InternalAssetLoader.TARGET_MINECART_TEXTURE_LOCATION);
             model.render(stack, ModelTransformationMode.NONE, renderType, pPackedLight, OverlayTexture.DEFAULT_UV);
-            if (targetMinecart.getGameProfile() != null) {
+
+            targetMinecart.getGameProfile().ifPresent(gameProfile -> {
                 stack.translate(0, 1, -4.5 / 16d);
                 MinecraftClient minecraft = MinecraftClient.getInstance();
-                GameProfile gameProfile = targetMinecart.getGameProfile();
-                var map = minecraft.getSkinProvider().getTextures(gameProfile);
-                Identifier skin;
-                if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-                    skin = minecraft.getSkinProvider().loadSkin(map.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
-                } else {
-                    skin = DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(gameProfile));
-                }
+                var map = minecraft.getSkinProvider().getSkinTextures(gameProfile);
+                Identifier skin = map.texture();
                 headModel.visible = true;
                 RenderLayer skullRenderType = RenderLayer.getEntityTranslucentCull(skin);
                 headModel.render(stack, ModelTransformationMode.NONE, buffer.getBuffer(skullRenderType), pPackedLight, OverlayTexture.DEFAULT_UV);
@@ -77,7 +68,7 @@ public class TargetMinecartRenderer extends MinecartEntityRenderer<TargetMinecar
                 head2Model.visible = true;
                 stack.translate(0, 0, 0.01);
                 head2Model.render(stack, ModelTransformationMode.NONE, buffer.getBuffer(skullRenderType), pPackedLight, OverlayTexture.DEFAULT_UV);
-            }
+            });
             stack.pop();
         });
     }

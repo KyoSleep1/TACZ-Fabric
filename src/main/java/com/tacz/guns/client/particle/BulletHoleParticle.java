@@ -53,14 +53,14 @@ public class BulletHoleParticle extends SpriteBillboardParticle {
         if (world.getBlockState(pos).isAir() || state.isOf(ModBlocks.TARGET)) {
             this.markDead();
         }
-        TimelessAPI.getClientGunIndex(new Identifier(gunId)).ifPresent(gunIndex -> {
+        TimelessAPI.getClientGunIndex(Identifier.of(gunId)).ifPresent(gunIndex -> {
             float[] gunTracerColor = gunIndex.getTracerColor();
             if (gunTracerColor != null) {
                 this.red = gunTracerColor[0];
                 this.green = gunTracerColor[1];
                 this.blue = gunTracerColor[2];
             } else {
-                TimelessAPI.getClientAmmoIndex(new Identifier(ammoId)).ifPresent(ammoIndex -> {
+                TimelessAPI.getClientAmmoIndex(Identifier.of(ammoId)).ifPresent(ammoIndex -> {
                     float[] ammoTracerColor = ammoIndex.getTracerColor();
                     this.red = ammoTracerColor[0];
                     this.green = ammoTracerColor[1];
@@ -171,10 +171,10 @@ public class BulletHoleParticle extends SpriteBillboardParticle {
         float fade = 1.0f - (float) (Math.max(this.age - threshold, 0) / (this.maxAge - threshold));
         float alphaFade = this.alpha * fade;
 
-        buffer.vertex(points[0].x(), points[0].y(), points[0].z()).texture(u1, v1).color(red, green, blue, alphaFade).light(lightColor).next();
-        buffer.vertex(points[1].x(), points[1].y(), points[1].z()).texture(u1, v0).color(red, green, blue, alphaFade).light(lightColor).next();
-        buffer.vertex(points[2].x(), points[2].y(), points[2].z()).texture(u0, v0).color(red, green, blue, alphaFade).light(lightColor).next();
-        buffer.vertex(points[3].x(), points[3].y(), points[3].z()).texture(u0, v1).color(red, green, blue, alphaFade).light(lightColor).next();
+        buffer.vertex(points[0].x(), points[0].y(), points[0].z()).texture(u1, v1).color(red, green, blue, alphaFade).light(lightColor);
+        buffer.vertex(points[1].x(), points[1].y(), points[1].z()).texture(u1, v0).color(red, green, blue, alphaFade).light(lightColor);
+        buffer.vertex(points[2].x(), points[2].y(), points[2].z()).texture(u0, v0).color(red, green, blue, alphaFade).light(lightColor);
+        buffer.vertex(points[3].x(), points[3].y(), points[3].z()).texture(u0, v1).color(red, green, blue, alphaFade).light(lightColor);
     }
 
     @Override

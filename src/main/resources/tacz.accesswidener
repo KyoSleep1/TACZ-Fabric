@@ -15,3 +15,5 @@ accessible method net/minecraft/client/network/ClientPlayerInteractionManager sy
 accessible method net/minecraft/util/thread/ThreadExecutor submitAsync (Ljava/lang/Runnable;)Ljava/util/concurrent/CompletableFuture;
 
 accessible field net/minecraft/client/option/KeyBinding timesPressed I
+
+accessible method net/minecraft/entity/vehicle/VehicleEntity asItem ()Lnet/minecraft/item/Item;

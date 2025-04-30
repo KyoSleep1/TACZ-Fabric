@@ -11,17 +11,15 @@ import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +31,7 @@ public class AmmoItem extends Item implements AmmoItemDataAccessor, IItem {
 
     @Override
     public boolean isEnchantable(ItemStack stack) {
-        return this.getMaxCount(stack) == 1 && this.isDamageable();
+        return this.getMaxCount(stack) == 1 && stack.isDamageable();
     }
 
     @Override
@@ -68,19 +66,19 @@ public class AmmoItem extends Item implements AmmoItemDataAccessor, IItem {
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> components, TooltipContext isAdvanced) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         Identifier ammoId = this.getAmmoId(stack);
         TimelessAPI.getClientAmmoIndex(ammoId).ifPresent(index -> {
             String tooltipKey = index.getTooltipKey();
             if (tooltipKey != null) {
-                components.add(Text.translatable(tooltipKey).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable(tooltipKey).formatted(Formatting.GRAY));
             }
         });
 
         PackInfo packInfoObject = ClientAssetManager.INSTANCE.getPackInfo(ammoId);
         if (packInfoObject != null) {
             MutableText component = Text.translatable(packInfoObject.getName()).formatted(Formatting.BLUE, Formatting.ITALIC);
-            components.add(component);
+            tooltip.add(component);
         }
     }
 }

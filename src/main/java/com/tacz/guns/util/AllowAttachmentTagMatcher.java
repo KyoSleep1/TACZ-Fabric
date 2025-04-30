@@ -26,7 +26,7 @@ public final class AllowAttachmentTagMatcher {
         for (String tag : tags) {
             // 如果是 tag，则去 attachment tag 寻找我们的东西
             if (tag.startsWith(TAG_PREFIX)) {
-                Identifier tagId = new Identifier(tag.substring(TAG_PREFIX.length()));
+                Identifier tagId = Identifier.of(tag.substring(TAG_PREFIX.length()));
                 Set<String> attachmentTags = CommonAssetManager.INSTANCE.getAttachmentTags(tagId);
                 // 如果检索的这个配件 tag 不为空，开始递归查找
                 if (attachmentTags != null && !attachmentTags.isEmpty()) {
@@ -35,7 +35,7 @@ public final class AllowAttachmentTagMatcher {
             }
             // 如果是配件 id，直接对比
             else {
-                Identifier matchAttachmentId = new Identifier(tag);
+                Identifier matchAttachmentId = Identifier.of(tag);
                 if (attachmentId.equals(matchAttachmentId)) {
                     searchSignal.set(true);
                     return;

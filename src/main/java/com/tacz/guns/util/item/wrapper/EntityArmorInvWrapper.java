@@ -5,6 +5,6 @@ import net.minecraft.entity.LivingEntity;
 
 public class EntityArmorInvWrapper extends EntityEquipmentInvWrapper {
     public EntityArmorInvWrapper(LivingEntity entity) {
-        super(entity, EquipmentSlot.Type.ARMOR);
+        super(entity, EquipmentSlot.Type.HUMANOID_ARMOR);
     }
 }

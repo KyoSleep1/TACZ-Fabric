@@ -84,7 +84,7 @@ public abstract class GameRendererMixin {
     private void renderWorld(RenderTickCounter tickCounter, CallbackInfo ci, @Local Camera camera,
                              @Local MatrixStack matrixStack) {
         var event = new ViewportEvent.ComputeCameraAngles((GameRenderer) (Object) this, camera,
-                tickCounter.getTickDelta(false), camera.getYaw(), camera.getPitch(), 0.0F);
+                tickCounter.getTickDelta(true), camera.getYaw(), camera.getPitch(), 0.0F);
         event.post();
         ((CameraAngles) camera).tacz$setAnglesInternal(event.getYaw(), event.getPitch());
         matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(event.getRoll()));

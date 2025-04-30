@@ -6,7 +6,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 
 public class ReloadResourceEvent {
-    public static final Identifier BLOCK_ATLAS_TEXTURE = new Identifier("textures/atlas/blocks.png");
+    public static final Identifier BLOCK_ATLAS_TEXTURE = Identifier.of("textures/atlas/blocks.png");
 
     public static void onTextureStitchEventPost(SpriteAtlasTexture atlas) {
         if (BLOCK_ATLAS_TEXTURE.equals(atlas.getId())) {

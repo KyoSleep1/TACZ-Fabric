@@ -1,16 +1,11 @@
 package com.tacz.guns.client.init;
 
 import com.tacz.guns.api.client.other.ThirdPersonManager;
-import com.tacz.guns.client.download.ClientGunPackDownloadManager;
 import com.tacz.guns.client.input.*;
 import com.tacz.guns.client.tooltip.ClientAmmoBoxTooltip;
 import com.tacz.guns.client.tooltip.ClientAttachmentItemTooltip;
 import com.tacz.guns.client.tooltip.ClientGunTooltip;
 import com.tacz.guns.compat.immediatelyfast.ImmediatelyFastCompat;
-import com.tacz.guns.compat.perspectivemod.PerspectiveModCompat;
-import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
-import com.tacz.guns.compat.shouldersurfing.ShoulderSurfingCompat;
-import com.tacz.guns.compat.zoomify.ZoomifyCompat;
 import com.tacz.guns.init.ModItems;
 import com.tacz.guns.inventory.tooltip.AmmoBoxTooltip;
 import com.tacz.guns.inventory.tooltip.AttachmentItemTooltip;
@@ -23,14 +18,9 @@ import committee.nova.mkb.keybinding.KeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.option.KeyBinding;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.List;
 
 public class ClientSetup {
 
@@ -63,7 +53,7 @@ public class ClientSetup {
         }
     }
 
-    private static TooltipComponent tooltipComponent(TooltipData tooltip) {
+    private static TooltipComponent tooltipComponent(net.minecraft.item.tooltip.TooltipData tooltip) {
         if (tooltip instanceof GunTooltip gunTooltip) {
             return new ClientGunTooltip(gunTooltip);
         }
@@ -91,16 +81,6 @@ public class ClientSetup {
         ModelPredicateProviderRegistry.register(ModItems.AMMO_BOX, AmmoBoxItem.PROPERTY_NAME, AmmoBoxItem::getStatue);
 
         // 初始化自己的枪包下载器
-        ClientGunPackDownloadManager.init();
-
-        // 与 player animator 的兼容
-        PlayerAnimatorCompat.init();
-
-        // 与 Shoulder Surfing Reloaded 的兼容
-        ShoulderSurfingCompat.init();
-
-        PerspectiveModCompat.init();
         ImmediatelyFastCompat.init();
-        ZoomifyCompat.init();
     }
 }

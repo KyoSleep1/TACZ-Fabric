@@ -7,6 +7,7 @@ import com.tacz.guns.api.event.common.GunMeleeEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.packets.s2c.event.GunMeleeS2CPacket;
 import com.tacz.guns.resource.index.CommonGunIndex;
@@ -52,7 +53,8 @@ public class LivingEntityMelee {
         if (new GunMeleeEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
             return;
         }
-        NetworkHandler.sendToTrackingEntity(new GunMeleeS2CPacket(shooter.getId(), currentGunItem), shooter);
+        NetworkClientHandler.GUN_MELEE.sendToSurroundingPlayers(new GunMeleeS2CPacket(shooter.getId(), currentGunItem),
+                shooter);
         if (currentGunItem.getItem() instanceof AbstractGunItem logicGun) {
             data.meleeTimestamp = System.currentTimeMillis();
 

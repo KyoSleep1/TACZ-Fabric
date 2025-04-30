@@ -1,28 +1,14 @@
 package com.tacz.guns.resource.serialize;
 
-import com.google.gson.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.JsonHelper;
 
-import java.lang.reflect.Type;
-
-public class GunSmithTableIngredientSerializer implements JsonDeserializer<GunSmithTableIngredient> {
-    @Override
-    public GunSmithTableIngredient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        if (json.isJsonObject()) {
-            JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.has("item")) {
-                throw new JsonSyntaxException("Expected " + jsonObject + " must has a item member");
-            }
-            Ingredient ingredient = Ingredient.fromJson(jsonObject.get("item"));
-            int count = 1;
-            if (jsonObject.has("count")) {
-                count = Math.max(JsonHelper.getInt(jsonObject, "count"), 1);
-            }
-            return new GunSmithTableIngredient(ingredient, count);
-        } else {
-            throw new JsonSyntaxException("Expected " + json + " to be a Pair because it's not an object");
-        }
-    }
+//TODO: THIS
+public class GunSmithTableIngredientSerializer {
+    public static final Codec<GunSmithTableIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("item").forGetter(GunSmithTableIngredient::ingredient),
+            Codec.INT.optionalFieldOf("count", 1).forGetter(GunSmithTableIngredient::count)
+    ).apply(instance, GunSmithTableIngredient::new));
 }

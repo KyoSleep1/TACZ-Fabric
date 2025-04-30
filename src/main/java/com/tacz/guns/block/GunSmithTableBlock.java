@@ -1,5 +1,6 @@
 package com.tacz.guns.block;
 
+import com.mojang.serialization.MapCodec;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import com.tacz.guns.util.DirectionUtil;
 import net.minecraft.block.*;
@@ -16,7 +17,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,16 +37,21 @@ public class GunSmithTableBlock extends BlockWithEntity {
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(PART, BedPart.FOOT));
     }
 
+    public GunSmithTableBlock(Settings settings) {
+        super(settings);
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(PART, BedPart.FOOT));
+    }
+
     private static Direction getNeighbourDirection(BedPart bedPart, Direction direction) {
         return bedPart == BedPart.FOOT ? DirectionUtil.getRight(direction) : DirectionUtil.getLeft(direction);
     }
 
     @Override
-    public ActionResult onUse(BlockState pState, World level, BlockPos pos, PlayerEntity player, Hand pHand, BlockHitResult pHit) {
-        if (level.isClient) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof GunSmithTableBlockEntity gunSmithTable) {
                 player.openHandledScreen(gunSmithTable);
             }
@@ -82,7 +87,7 @@ public class GunSmithTableBlock extends BlockWithEntity {
     }
 
     @Override
-    public void onBreak(World level, BlockPos pos, BlockState blockState, PlayerEntity player) {
+    public BlockState onBreak(World level, BlockPos pos, BlockState blockState, PlayerEntity player) {
         if (!level.isClient && player.isCreative()) {
             BedPart bedPart = blockState.get(PART);
             if (bedPart == BedPart.FOOT) {
@@ -91,10 +96,11 @@ public class GunSmithTableBlock extends BlockWithEntity {
                 if (blockstate.isOf(this) && blockstate.get(PART) == BedPart.HEAD) {
                     level.setBlockState(blockpos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
                     level.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockpos, Block.getRawIdFromState(blockstate));
+                    return blockState;
                 }
             }
         }
-        super.onBreak(level, pos, blockState, player);
+        return super.onBreak(level, pos, blockState, player);
     }
 
     @Override
@@ -124,6 +130,11 @@ public class GunSmithTableBlock extends BlockWithEntity {
         } else {
             return super.getStateForNeighborUpdate(state, direction, facingState, level, currentPos, facingPos);
         }
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return createCodec(GunSmithTableBlock::new);
     }
 
     @Override

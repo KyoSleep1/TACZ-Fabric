@@ -12,8 +12,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class ModDamageTypes {
-    public static final RegistryKey<DamageType> BULLET = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(GunMod.MOD_ID, "bullet"));
-    public static final RegistryKey<DamageType> BULLET_IGNORE_ARMOR = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(GunMod.MOD_ID, "bullet_ignore_armor"));
+    public static final RegistryKey<DamageType> BULLET = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(GunMod.MOD_ID, "bullet"));
+    public static final RegistryKey<DamageType> BULLET_IGNORE_ARMOR = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(GunMod.MOD_ID, "bullet_ignore_armor"));
 
     public static void init() {
     }

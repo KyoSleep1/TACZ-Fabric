@@ -32,8 +32,8 @@ public final class TextureLoader {
                 GunMod.LOGGER.warn(MARKER, "{} file don't exist", zipPath);
                 return false;
             }
-            Identifier ori_id = new Identifier(ori_namespace, path);
-            Identifier id = new Identifier(namespace, path);
+            Identifier ori_id = Identifier.of(ori_namespace, path);
+            Identifier id = Identifier.of(namespace, path);
             ZipPackTexture zipPackTexture = new ZipPackTexture(ori_id, zipFile.getName());
             MinecraftClient.getInstance().getTextureManager().registerTexture(id, zipPackTexture);
             return true;

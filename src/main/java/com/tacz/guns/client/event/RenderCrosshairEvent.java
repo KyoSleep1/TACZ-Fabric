@@ -12,7 +12,6 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
 import com.tacz.guns.client.gui.GunRefitScreen;
 import com.tacz.guns.client.renderer.crosshair.CrosshairType;
-import com.tacz.guns.compat.shouldersurfing.ShoulderSurfingCompat;
 import com.tacz.guns.config.client.RenderConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -25,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
 public class RenderCrosshairEvent {
-    private static final Identifier HIT_ICON = new Identifier(GunMod.MOD_ID, "textures/crosshair/hit/hit_marker.png");
+    private static final Identifier HIT_ICON = Identifier.of(GunMod.MOD_ID, "textures/crosshair/hit/hit_marker.png");
     private static final long KEEP_TIME = 300;
     private static boolean isRefitScreen = false;
     private static long hitTimestamp = -1L;
@@ -65,13 +64,11 @@ public class RenderCrosshairEvent {
         TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
             // Cancel center rendering when aiming is almost complete
 
-            if (playerGunOperator.getClientAimingProgress(MinecraftClient.getInstance().getTickDelta()) > 0.9) {
+            if (playerGunOperator.getClientAimingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true)) > 0.9) {
                 // Gun packs can be forced to show collimator
                 boolean forceShow = gunIndex.isShowCrosshair();
-                // Over-the-shoulder view can be forced to show collimator
-                boolean shoulderSurfingForceShow = ShoulderSurfingCompat.showCrosshair();
                 // If neither of the two forces are present, then only hide is allowed.
-                if (!forceShow && !shoulderSurfingForceShow) {
+                if (!forceShow) {
                     return;
                 }
             }
@@ -91,8 +88,7 @@ public class RenderCrosshairEvent {
     private static void renderCrosshair(DrawContext graphics, Window window) {
         GameOptions options = MinecraftClient.getInstance().options;
         // 越肩视角可以强制显示准星
-        boolean shoulderSurfingForceShow = ShoulderSurfingCompat.showCrosshair();
-        if (!options.getPerspective().isFirstPerson() && !shoulderSurfingForceShow) {
+        if (!options.getPerspective().isFirstPerson()) {
             return;
         }
         if (options.hudHidden) {

@@ -7,7 +7,6 @@ public class CommonRegistry {
     private static boolean LOAD_COMPLETE = false;
 
     public static void init() {
-        HandshakeNetworking.init();
         NetworkHandler.init();
         ModSyncedEntityData.init();
     }

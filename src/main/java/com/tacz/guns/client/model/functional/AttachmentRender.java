@@ -67,7 +67,7 @@ public class AttachmentRender implements IFunctionalRenderer {
                 // 没有对应的 attachmentIndex，渲染黑紫材质以提醒
                 VertexConsumerProvider bufferSource = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
                 VertexConsumer buffer = bufferSource.getBuffer(RenderLayer.getEntityTranslucent(MissingSprite.getMissingSpriteId()));
-                AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.render(poseStack, buffer, light, overlay,0xFFFFFFFF);
             });
         }
     }

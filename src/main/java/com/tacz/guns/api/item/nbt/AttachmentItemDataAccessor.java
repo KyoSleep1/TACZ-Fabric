@@ -2,90 +2,60 @@ package com.tacz.guns.api.item.nbt;
 
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.item.IAttachment;
+import com.tacz.guns.api.item.attachment.AttachmentType;
+import com.tacz.guns.init.ModItemComponents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 public interface AttachmentItemDataAccessor extends IAttachment {
-    String ATTACHMENT_ID_TAG = "AttachmentId";
-    String SKIN_ID_TAG = "Skin";
-    String ZOOM_NUMBER_TAG = "ZoomNumber";
 
+    static int getZoomNumber(ItemStack attachment) {
+        return attachment.getOrDefault(ModItemComponents.ATTACHMENT_ZOOM_NUMBER, 0);
+    }
+
+    static void setZoomNumber(ItemStack attachment, int zoomNumber) {
+        attachment.set(ModItemComponents.ATTACHMENT_ZOOM_NUMBER, zoomNumber);
+    }
+
+    @Override
     @NotNull
-    static Identifier getAttachmentIdFromTag(@Nullable NbtCompound nbt) {
-        if (nbt == null) {
+    default Identifier getAttachmentId(ItemStack attachment) {
+        final AttachmentType type = attachment.getOrDefault(ModItemComponents.ATTACHMENT_TYPE, AttachmentType.NONE);
+        if (type == AttachmentType.NONE) {
             return DefaultAssets.EMPTY_ATTACHMENT_ID;
         }
-        if (nbt.contains(ATTACHMENT_ID_TAG, NbtElement.STRING_TYPE)) {
-            Identifier attachmentId = Identifier.tryParse(nbt.getString(ATTACHMENT_ID_TAG));
-            return Objects.requireNonNullElse(attachmentId, DefaultAssets.EMPTY_ATTACHMENT_ID);
-        }
-        return DefaultAssets.EMPTY_ATTACHMENT_ID;
-    }
-
-    static int getZoomNumberFromTag(@Nullable NbtCompound nbt) {
-        if (nbt == null) {
-            return 0;
-        }
-        if (nbt.contains(ZOOM_NUMBER_TAG, NbtElement.INT_TYPE)) {
-            return nbt.getInt(ZOOM_NUMBER_TAG);
-        }
-        return 0;
-    }
-
-    static void setZoomNumberToTag(NbtCompound nbt, int zoomNumber) {
-        nbt.putInt(ZOOM_NUMBER_TAG, zoomNumber);
+        return attachment.getOrDefault(ModItemComponents.ATTACHMENT_ID, DefaultAssets.EMPTY_ATTACHMENT_ID);
     }
 
     @Override
-    @NotNull
-    default Identifier getAttachmentId(ItemStack attachmentStack) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
-        return getAttachmentIdFromTag(nbt);
-    }
-
-    @Override
-    default void setAttachmentId(ItemStack attachmentStack, @Nullable Identifier attachmentId) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
-        if (attachmentId != null) {
-            nbt.putString(ATTACHMENT_ID_TAG, attachmentId.toString());
-        }
+    default void setAttachmentId(ItemStack attachment, @Nullable Identifier attachmentId) {
+        attachment.set(ModItemComponents.ATTACHMENT_ID, attachmentId);
     }
 
     @Override
     @Nullable
-    default Identifier getSkinId(ItemStack attachmentStack) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
-        if (nbt.contains(SKIN_ID_TAG, NbtElement.STRING_TYPE)) {
-            return Identifier.tryParse(nbt.getString(SKIN_ID_TAG));
-        }
-        return null;
+    default Identifier getSkinId(ItemStack attachment) {
+        return attachment.getOrDefault(ModItemComponents.ATTACHMENT_SKIN_ID, null);
     }
 
     @Override
-    default void setSkinId(ItemStack attachmentStack, @Nullable Identifier skinId) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
+    default void setSkinId(ItemStack attachment, @Nullable Identifier skinId) {
         if (skinId != null) {
-            nbt.putString(SKIN_ID_TAG, skinId.toString());
+            attachment.set(ModItemComponents.ATTACHMENT_SKIN_ID, skinId);
         } else {
-            nbt.remove(SKIN_ID_TAG);
+            attachment.remove(ModItemComponents.ATTACHMENT_SKIN_ID);
         }
     }
 
     @Override
-    default int getZoomNumber(ItemStack attachmentStack) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
-        return getZoomNumberFromTag(nbt);
+    default int internalGetZoomNumber(ItemStack attachment) {
+        return AttachmentItemDataAccessor.getZoomNumber(attachment);
     }
 
     @Override
-    default void setZoomNumber(ItemStack attachmentStack, int zoomNumber) {
-        NbtCompound nbt = attachmentStack.getOrCreateNbt();
-        setZoomNumberToTag(nbt, zoomNumber);
+    default void internalSetZoomNumber(ItemStack attachment, int zoomNumber) {
+        AttachmentItemDataAccessor.setZoomNumber(attachment, zoomNumber);
     }
 }

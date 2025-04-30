@@ -31,6 +31,7 @@ public class GunMod implements ModInitializer {
 		ModEvents.init();
 		ModBlocks.init();
 		ModCreativeTabs.init();
+		ModItemComponents.init();
 		ModItems.init();
 		ModEntities.init();
 		ModRecipe.init();
@@ -41,8 +42,6 @@ public class GunMod implements ModInitializer {
 		CommonRegistry.init();
 		CommandRegistry.init();
 		CompatRegistry.init();
-
-		GunModComponents.init();
 
 		registerDefaultExtraGunPack();
 

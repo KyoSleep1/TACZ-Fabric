@@ -30,6 +30,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,7 @@ public class ClientGunIndex {
     private BedrockGunModel gunModel;
     private @Nullable Pair<BedrockGunModel, Identifier> lodModel;
     private GunAnimationStateMachine animationStateMachine;
-    private @Nullable Identifier playerAnimator3rd = new Identifier(GunMod.MOD_ID, "rifle_default.player_animation");
+    private @Nullable Identifier playerAnimator3rd = Identifier.of(GunMod.MOD_ID, "rifle_default.player_animation");
     private Map<String, Identifier> sounds;
     private GunTransform transform;
     private GunData gunData;
@@ -244,14 +245,14 @@ public class ClientGunIndex {
             return;
         }
         // 部分音效为默认音效，不存在则需要添加默认音效
-        soundMaps.putIfAbsent(SoundManager.DRY_FIRE_SOUND, new Identifier(GunMod.MOD_ID, SoundManager.DRY_FIRE_SOUND));
-        soundMaps.putIfAbsent(SoundManager.FIRE_SELECT, new Identifier(GunMod.MOD_ID, SoundManager.FIRE_SELECT));
-        soundMaps.putIfAbsent(SoundManager.HEAD_HIT_SOUND, new Identifier(GunMod.MOD_ID, SoundManager.HEAD_HIT_SOUND));
-        soundMaps.putIfAbsent(SoundManager.FLESH_HIT_SOUND, new Identifier(GunMod.MOD_ID, SoundManager.FLESH_HIT_SOUND));
-        soundMaps.putIfAbsent(SoundManager.KILL_SOUND, new Identifier(GunMod.MOD_ID, SoundManager.KILL_SOUND));
-        soundMaps.putIfAbsent(SoundManager.MELEE_BAYONET, new Identifier(GunMod.MOD_ID, "melee_bayonet/melee_bayonet_01"));
-        soundMaps.putIfAbsent(SoundManager.MELEE_STOCK, new Identifier(GunMod.MOD_ID, "melee_stock/melee_stock_01"));
-        soundMaps.putIfAbsent(SoundManager.MELEE_PUSH, new Identifier(GunMod.MOD_ID, "melee_stock/melee_stock_02"));
+        soundMaps.putIfAbsent(SoundManager.DRY_FIRE_SOUND, Identifier.of(GunMod.MOD_ID, SoundManager.DRY_FIRE_SOUND));
+        soundMaps.putIfAbsent(SoundManager.FIRE_SELECT, Identifier.of(GunMod.MOD_ID, SoundManager.FIRE_SELECT));
+        soundMaps.putIfAbsent(SoundManager.HEAD_HIT_SOUND, Identifier.of(GunMod.MOD_ID, SoundManager.HEAD_HIT_SOUND));
+        soundMaps.putIfAbsent(SoundManager.FLESH_HIT_SOUND, Identifier.of(GunMod.MOD_ID, SoundManager.FLESH_HIT_SOUND));
+        soundMaps.putIfAbsent(SoundManager.KILL_SOUND, Identifier.of(GunMod.MOD_ID, SoundManager.KILL_SOUND));
+        soundMaps.putIfAbsent(SoundManager.MELEE_BAYONET, Identifier.of(GunMod.MOD_ID, "melee_bayonet/melee_bayonet_01"));
+        soundMaps.putIfAbsent(SoundManager.MELEE_STOCK, Identifier.of(GunMod.MOD_ID, "melee_stock/melee_stock_01"));
+        soundMaps.putIfAbsent(SoundManager.MELEE_PUSH, Identifier.of(GunMod.MOD_ID, "melee_stock/melee_stock_02"));
         index.sounds.putAll(soundMaps);
     }
 
@@ -293,7 +294,7 @@ public class ClientGunIndex {
             try {
                 String name = particle.getName();
                 if (StringUtils.isNoneBlank()) {
-                    particle.setParticleOptions(ParticleEffectArgumentType.readParameters(new StringReader(name), Registries.PARTICLE_TYPE.getReadOnlyWrapper()));
+                    particle.setParticleOptions(ParticleEffectArgumentType.readParameters(new StringReader(name), BuiltinRegistries.createWrapperLookup()));
                     Preconditions.checkArgument(particle.getCount() > 0, "particle count must be greater than 0");
                     Preconditions.checkArgument(particle.getLifeTime() > 0, "particle life time must be greater than 0");
                     index.particle = particle;

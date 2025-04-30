@@ -12,8 +12,8 @@ public class ZipPackTexturePBRLoader implements PBRTextureLoader<ZipPackTexture>
     @Override
     public void load(ZipPackTexture zipPackTexture, ResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
         Identifier id = zipPackTexture.getRegisterId();
-        Identifier pbrNormalId = new Identifier(id.getNamespace(), id.getPath() + PBRType.NORMAL.getSuffix());
-        Identifier pbrSpecularId = new Identifier(id.getNamespace(), id.getPath() + PBRType.SPECULAR.getSuffix());
+        Identifier pbrNormalId = Identifier.of(id.getNamespace(), id.getPath() + PBRType.NORMAL.getSuffix());
+        Identifier pbrSpecularId = Identifier.of(id.getNamespace(), id.getPath() + PBRType.SPECULAR.getSuffix());
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         if (textureManager.textures.containsKey(pbrNormalId)) {
             pbrTextureConsumer.acceptNormalTexture(textureManager.getTexture(pbrNormalId));

@@ -18,7 +18,6 @@ import com.tacz.guns.client.resource.serialize.AnimationKeyframesSerializer;
 import com.tacz.guns.client.resource.serialize.ItemStackSerializer;
 import com.tacz.guns.client.resource.serialize.SoundEffectKeyframesSerializer;
 import com.tacz.guns.client.resource.serialize.Vector3fSerializer;
-import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
@@ -47,7 +46,7 @@ public class ClientGunPackLoader {
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .registerTypeAdapter(Vector3f.class, new Vector3fSerializer())
             .registerTypeAdapter(CommonTransformObject.class, new CommonTransformObject.Serializer())
-            .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+            .registerTypeAdapter(ItemStack.class, ItemStackSerializer.CODEC)
             .registerTypeAdapter(AnimationKeyframes.class, new AnimationKeyframesSerializer())
             .registerTypeAdapter(SoundEffectKeyframes.class, new SoundEffectKeyframesSerializer())
             .create();
@@ -99,7 +98,7 @@ public class ClientGunPackLoader {
             try {
                 Files.createDirectories(folder.toPath());
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
         }
     }
@@ -136,7 +135,6 @@ public class ClientGunPackLoader {
             AttachmentDisplayLoader.load(root);
             AttachmentSkinLoader.load(root);
             AnimationLoader.load(root);
-            PlayerAnimatorCompat.loadAnimationFromFile(root);
             BedrockModelLoader.load(root);
             TextureLoader.load(root);
             SoundLoader.load(root);
@@ -168,10 +166,6 @@ public class ClientGunPackLoader {
                 if (AnimationLoader.load(zipFile, path)) {
                     continue;
                 }
-                // 加载 player animator 动画
-                if (PlayerAnimatorCompat.loadAnimationFromZip(zipFile, path)) {
-                    continue;
-                }
                 // 加载全部的 model 文件
                 if (BedrockModelLoader.load(zipFile, path)) {
                     continue;
@@ -192,7 +186,7 @@ public class ClientGunPackLoader {
                 PackInfoLoader.load(zipFile, path);
             }
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            ioException.printStackTrace(System.out);
         }
     }
 

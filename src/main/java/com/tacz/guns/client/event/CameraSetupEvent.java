@@ -1,6 +1,5 @@
 package com.tacz.guns.client.event;
 
-import com.tacz.guns.GunMod;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.event.BeforeRenderHandEvent;
@@ -14,7 +13,6 @@ import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.api.client.event.ViewportEvent;
-import com.tacz.guns.compat.perspectivemod.PerspectiveModCompat;
 import com.tacz.guns.resource.pojo.data.attachment.RecoilModifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
@@ -67,7 +65,7 @@ public class CameraSetupEvent {
                 lastModel = gunModel;
             }
             IClientPlayerGunOperator clientPlayerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
-            float partialTicks = MinecraftClient.getInstance().getTickDelta();
+            float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
             float aimingProgress = clientPlayerGunOperator.getClientAimingProgress(partialTicks);
             float zoom = iGun.getAimingZoom(stack);
             float multiplier = 1 - aimingProgress + aimingProgress / (float) Math.sqrt(zoom);
@@ -100,7 +98,7 @@ public class CameraSetupEvent {
             BedrockGunModel gunModel = gunIndex.getGunModel();
             MatrixStack poseStack = event.getPoseStack();
             IClientPlayerGunOperator clientPlayerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
-            float partialTicks = MinecraftClient.getInstance().getTickDelta();
+            float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
             float aimingProgress = clientPlayerGunOperator.getClientAimingProgress(partialTicks);
             float zoom = iGun.getAimingZoom(stack);
             float multiplier = 1 - aimingProgress + aimingProgress / (float) Math.sqrt(zoom);
@@ -200,7 +198,7 @@ public class CameraSetupEvent {
                 attachmentRecoilModifier[1] += recoilModifier.getYaw();
             });
             IClientPlayerGunOperator clientPlayerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
-            float partialTicks = MinecraftClient.getInstance().getTickDelta();
+            float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
             float aimingProgress = clientPlayerGunOperator.getClientAimingProgress(partialTicks);
             float zoom = iGun.getAimingZoom(mainhandItem);
             float aimingRecoilModifier = 1 - aimingProgress + aimingProgress / (float) Math.sqrt(zoom);
@@ -220,9 +218,6 @@ public class CameraSetupEvent {
         if (pitchSplineFunction != null && pitchSplineFunction.isValidPoint(timeTotal)) {
             double value = pitchSplineFunction.value(timeTotal);
             float setPitch = player.getPitch() - (float) (value - xRotO);
-            if (PerspectiveModCompat.getPerspectiveEnabled() && setPitch < -90f) {
-                setPitch = -90f;
-            }
             player.setPitch(setPitch);
             xRotO = value;
         }

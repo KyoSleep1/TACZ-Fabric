@@ -20,7 +20,7 @@ public class ModItems {
     public static Item TARGET_MINECART = register("target_minecart", new TargetMinecartItem());
 
     private static <T extends Item> T register(String path, T item) {
-        return Registry.register(Registries.ITEM, new Identifier(GunMod.MOD_ID, path), item);
+        return Registry.register(Registries.ITEM, Identifier.of(GunMod.MOD_ID, path), item);
     }
 
     public static void init() {

@@ -19,6 +19,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BedrockAttachmentModel extends BedrockAnimatedModel {
     private static final String SCOPE_VIEW_NODE = "scope_view";
@@ -189,28 +190,28 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
             RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFF);
             renderTempPart(matrixStack, transformType, renderType, light, overlay, scopeBodyPath);
         }
-        BufferBuilder builder = Tessellator.getInstance().getBuffer();
         // 渲染圆形模板层
         RenderSystem.stencilFunc(GL11.GL_EQUAL, 1, 0xFF);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
         RenderSystem.colorMask(false, false, false, false);
         RenderSystem.depthMask(false);
-        Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
+        Vector3f ocularCenter = getBedrockPartCenter(matrixStack, Objects.requireNonNull(ocularNodePath));
         float centerX = ocularCenter.x() * 16 * 90;
         float centerY = ocularCenter.y() * 16 * 90;
         // 80是一个随便找的大小合适的数值。
         float rad = 80 * scopeViewRadiusModifier;
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player != null) {
-            rad *= IClientPlayerGunOperator.fromLocalPlayer(player).getClientAimingProgress(MinecraftClient.getInstance().getTickDelta());
+            rad *= IClientPlayerGunOperator.fromLocalPlayer(player).getClientAimingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true));
         }
-        builder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-        builder.vertex(centerX, centerY, -90.0D).color(255, 255, 255, 255).next();
+        final BufferBuilder builder = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+        builder.vertex(centerX, centerY, -90.0F).color(255, 255, 255, 255);
         for (int i = 0; i <= 90; i++) {
             float angle = (float) i * ((float) Math.PI * 2F) / 90.0F;
             float sin = MathHelper.sin(angle);
             float cos = MathHelper.cos(angle);
-            builder.vertex(centerX + cos * rad, centerY + sin * rad, -90.0D).color(255, 255, 255, 255).next();
+            builder.vertex(centerX + cos * rad, centerY + sin * rad, -90.0F)
+                    .color(255, 255, 255, 255);
         }
         BufferRenderer.drawWithGlobalProgram(builder.end());
         RenderSystem.depthMask(true);

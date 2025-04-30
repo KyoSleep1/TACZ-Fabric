@@ -29,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 
 public class GunHudOverlay {
-    private static final Identifier SEMI = new Identifier(GunMod.MOD_ID, "textures/hud/fire_mode_semi.png");
-    private static final Identifier AUTO = new Identifier(GunMod.MOD_ID, "textures/hud/fire_mode_auto.png");
-    private static final Identifier BURST = new Identifier(GunMod.MOD_ID, "textures/hud/fire_mode_burst.png");
+    private static final Identifier SEMI = Identifier.of(GunMod.MOD_ID, "textures/hud/fire_mode_semi.png");
+    private static final Identifier AUTO = Identifier.of(GunMod.MOD_ID, "textures/hud/fire_mode_auto.png");
+    private static final Identifier BURST = Identifier.of(GunMod.MOD_ID, "textures/hud/fire_mode_burst.png");
     private static final DecimalFormat CURRENT_AMMO_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat INVENTORY_AMMO_FORMAT = new DecimalFormat("0000");
     private static long checkAmmoTimestamp = -1L;

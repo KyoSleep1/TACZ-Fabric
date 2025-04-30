@@ -28,10 +28,10 @@ public class ModBlocks {
     }
 
     private static Block register(String path, Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier(GunMod.MOD_ID, path), block);
+        return Registry.register(Registries.BLOCK, Identifier.of(GunMod.MOD_ID, path), block);
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> register(String path, BlockEntityType<T> entityType) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(GunMod.MOD_ID, path), entityType);
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(GunMod.MOD_ID, path), entityType);
     }
 }

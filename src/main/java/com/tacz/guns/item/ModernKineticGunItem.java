@@ -13,7 +13,7 @@ import com.tacz.guns.command.sub.DebugCommand;
 import com.tacz.guns.config.common.GunConfig;
 import com.tacz.guns.debug.GunMeleeDebug;
 import com.tacz.guns.entity.EntityKineticBullet;
-import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.event.GunFireS2CPacket;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
@@ -27,6 +27,7 @@ import com.tacz.guns.util.CycleTaskHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -113,7 +114,8 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             // 触发击发事件
             boolean fire = !new GunFireEvent(shooter, gunItem, LogicalSide.SERVER).post();
             if (fire) {
-                NetworkHandler.sendToTrackingEntity(new GunFireS2CPacket(shooter.getId(), gunItem), shooter);
+                NetworkClientHandler.GUN_FIRE.sendToAllPlayers(new GunFireS2CPacket(shooter.getId(), gunItem),
+                        shooter.getWorld());
                 if (consumeAmmo) {
                     // 削减弹药
                     this.reduceAmmo(gunItem);
@@ -216,13 +218,14 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             return;
         }
         for (EffectData data : effects) {
-            StatusEffect mobEffect = Registries.STATUS_EFFECT.get(data.getEffectId());
-            if (mobEffect == null) {
+            var mobEffect = Registries.STATUS_EFFECT.getEntry(data.getEffectId());
+            if (mobEffect.isEmpty()) {
                 continue;
             }
             int time = Math.max(0, data.getTime() * 20);
             int amplifier = Math.max(0, data.getAmplifier());
-            StatusEffectInstance effectInstance = new StatusEffectInstance(mobEffect, time, amplifier, false, data.isHideParticles());
+            StatusEffectInstance effectInstance = new StatusEffectInstance(mobEffect.get(), time, amplifier,
+                    false, data.isHideParticles());
             target.addStatusEffect(effectInstance);
         }
         if (user.getWorld() instanceof ServerWorld serverLevel) {

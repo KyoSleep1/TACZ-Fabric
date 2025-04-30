@@ -43,7 +43,7 @@ public final class AnimationLoader {
                 return false;
             }
             try (InputStream animationFileStream = zipFile.getInputStream(entry)) {
-                Identifier registryName = new Identifier(namespace, path);
+                Identifier registryName = Identifier.of(namespace, path);
                 RawAnimationStructure rawStructure = GSON.fromJson(IOReader.toString(animationFileStream, StandardCharsets.UTF_8), RawAnimationStructure.class);
                 ClientAssetManager.INSTANCE.putGltfAnimation(registryName, new AnimationStructure(rawStructure));
             } catch (IOException | JsonSyntaxException | JsonIOException exception) {
@@ -61,7 +61,7 @@ public final class AnimationLoader {
                 return false;
             }
             try (InputStream animationFileStream = zipFile.getInputStream(entry)) {
-                Identifier registryName = new Identifier(namespace, path);
+                Identifier registryName = Identifier.of(namespace, path);
                 BedrockAnimationFile bedrockAnimationFile = GSON.fromJson(IOReader.toString(animationFileStream, StandardCharsets.UTF_8), BedrockAnimationFile.class);
                 ClientAssetManager.INSTANCE.putBedrockAnimation(registryName, bedrockAnimationFile);
             } catch (IOException | JsonSyntaxException | JsonIOException exception) {

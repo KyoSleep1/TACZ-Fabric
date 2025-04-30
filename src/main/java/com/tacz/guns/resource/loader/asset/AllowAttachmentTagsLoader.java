@@ -43,7 +43,7 @@ public class AllowAttachmentTagsLoader {
                 return false;
             }
             try (InputStream stream = zipFile.getInputStream(entry)) {
-                Identifier registryName = new Identifier(namespace, path);
+                Identifier registryName = Identifier.of(namespace, path);
                 String json = IOReader.toString(stream, StandardCharsets.UTF_8);
                 loadFromJsonString(registryName, json);
                 CommonGunPackNetwork.addData(DataType.ALLOW_ATTACHMENT_TAGS, registryName, json);

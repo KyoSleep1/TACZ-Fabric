@@ -12,7 +12,6 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
@@ -39,14 +38,14 @@ public class LivingEntityAim {
             return;
         }
         Identifier scopeId = iGun.getAttachmentId(currentGunItem, AttachmentType.SCOPE);
-        NbtCompound scopeTag = iGun.getAttachmentTag(currentGunItem, AttachmentType.SCOPE);
+        ItemStack scopeTag = iGun.getAttachment(currentGunItem, AttachmentType.SCOPE);
         if (!DefaultAssets.isEmptyAttachmentId(scopeId) && scopeTag != null) {
             TimelessAPI.getCommonAttachmentIndex(scopeId).ifPresent(index -> {
-                int zoomNumber = AttachmentItemDataAccessor.getZoomNumberFromTag(scopeTag);
+                int zoomNumber = AttachmentItemDataAccessor.getZoomNumber(scopeTag);
                 ++zoomNumber;
                 // 避免上溢变成负的
                 zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1);
-                AttachmentItemDataAccessor.setZoomNumberToTag(scopeTag, zoomNumber);
+                AttachmentItemDataAccessor.setZoomNumber(scopeTag, zoomNumber);
             });
         }
     }

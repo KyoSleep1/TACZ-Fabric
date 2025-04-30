@@ -64,7 +64,7 @@ public class AmmoItemRenderer implements BuiltinItemRendererRegistry.DynamicItem
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
                 VertexConsumer buffer = pBuffer.getBuffer(RenderLayer.getEntityTranslucent(ammoIndex.getSlotTextureLocation()));
-                SLOT_AMMO_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                SLOT_AMMO_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 0xFFFFFFFF);
                 return;
             }
             // 剩下的渲染
@@ -84,7 +84,7 @@ public class AmmoItemRenderer implements BuiltinItemRendererRegistry.DynamicItem
             poseStack.translate(0.5, 1.5, 0.5);
             poseStack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
             VertexConsumer buffer = pBuffer.getBuffer(RenderLayer.getEntityTranslucent(MissingSprite.getMissingSpriteId()));
-            SLOT_AMMO_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            SLOT_AMMO_MODEL.render(poseStack, buffer, pPackedLight, pPackedOverlay, 0xFFFFFFFF);
         });
         poseStack.pop();
     }

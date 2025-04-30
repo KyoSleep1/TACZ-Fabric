@@ -16,12 +16,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
+//TODO: THIS
 public class GunSmithTableResultSerializer implements JsonDeserializer<GunSmithTableResult> {
     @Override
     public GunSmithTableResult deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         if (json.isJsonObject()) {
             JsonObject jsonObject = json.getAsJsonObject();
-            Identifier id = new Identifier(JsonHelper.getString(jsonObject, "id"));
+            Identifier id = Identifier.of(JsonHelper.getString(jsonObject, "id"));
             String typeName = JsonHelper.getString(jsonObject, "type");
             int count = 1;
             if (jsonObject.has("count")) {

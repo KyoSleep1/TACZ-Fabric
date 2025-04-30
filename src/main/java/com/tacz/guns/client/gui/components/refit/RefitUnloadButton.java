@@ -17,7 +17,7 @@ public class RefitUnloadButton extends ButtonWidget implements IComponentTooltip
     }
 
     @Override
-    public void renderButton(@NotNull DrawContext graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(@NotNull DrawContext graphics, int pMouseX, int pMouseY, float pPartialTick) {
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
 

@@ -1,5 +1,6 @@
 package com.tacz.guns.block;
 
+import com.mojang.serialization.MapCodec;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.block.entity.StatueBlockEntity;
 import com.tacz.guns.init.ModBlocks;
@@ -19,7 +20,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -39,10 +39,18 @@ public class StatueBlock extends BlockWithEntity {
         );
     }
 
+    public StatueBlock(Settings settings) {
+        super(settings);
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(HALF, DoubleBlockHalf.LOWER)
+                .with(FACING, Direction.NORTH)
+        );
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return state.get(HALF).equals(DoubleBlockHalf.LOWER) && level.isClient() ? checkType(blockEntityType, ModBlocks.STATUE_BE, StatueBlockEntity::clientTick) : null;
+        return state.get(HALF).equals(DoubleBlockHalf.LOWER) && level.isClient() ? validateTicker(blockEntityType, ModBlocks.STATUE_BE, StatueBlockEntity::clientTick) : null;
     }
 
     @Override
@@ -57,17 +65,17 @@ public class StatueBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState pState, World level, BlockPos pos, PlayerEntity player, Hand pHand, BlockHitResult pHit) {
-        if (level.isClient()) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (world.isClient()) {
             return ActionResult.SUCCESS;
         } else {
-            if (pState.get(HALF) == DoubleBlockHalf.UPPER) {
+            if (state.get(HALF) == DoubleBlockHalf.UPPER) {
                 pos = pos.down();
             }
 
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof StatueBlockEntity statueBlockEntity) {
-                ItemStack stack = player.getStackInHand(pHand);
+                ItemStack stack = player.getStackInHand(player.getActiveHand());
                 if (stack.getItem() instanceof IGun) {
                     statueBlockEntity.setGun(stack);
                     stack.decrement(1);
@@ -131,6 +139,11 @@ public class StatueBlock extends BlockWithEntity {
             }
             super.onStateReplaced(pState, pLevel, pPos, pNewState, pMovedByPiston);
         }
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return createCodec(StatueBlock::new);
     }
 
     @Override

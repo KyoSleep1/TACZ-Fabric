@@ -29,7 +29,7 @@ public class TacPathVisitor extends SimpleFileVisitor<Path> {
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         if (file.toFile().getName().endsWith(suffix)) {
             String path = PathHandler.getPath(root.toPath(), file, suffix);
-            Identifier id = new Identifier(checkNamespace(namespace), path);
+            Identifier id = Identifier.of(checkNamespace(namespace), path);
             consumer.accept(id, file);
         }
 

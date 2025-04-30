@@ -1,6 +1,7 @@
 package com.tacz.guns.block;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.MapCodec;
 import com.tacz.guns.block.entity.TargetBlockEntity;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.init.ModBlocks;
@@ -10,6 +11,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -34,6 +36,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 public class TargetBlock extends BlockWithEntity {
     public static final IntProperty OUTPUT_POWER = Properties.POWER;
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -47,6 +51,11 @@ public class TargetBlock extends BlockWithEntity {
 
     public TargetBlock() {
         super(Settings.create().sounds(BlockSoundGroup.WOOD).strength(2.0F, 3.0F).pistonBehavior(PistonBehavior.DESTROY).nonOpaque());
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER).with(STAND, true).with(OUTPUT_POWER, 0));
+    }
+
+    public TargetBlock(Settings settings) {
+        super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER).with(STAND, true).with(OUTPUT_POWER, 0));
     }
 
@@ -78,7 +87,7 @@ public class TargetBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return state.get(HALF).equals(DoubleBlockHalf.LOWER) && world.isClient() ? checkType(type, ModBlocks.TARGET_BE, TargetBlockEntity::clientTick) : null;
+        return state.get(HALF).equals(DoubleBlockHalf.LOWER) && world.isClient() ? validateTicker(type, ModBlocks.TARGET_BE, TargetBlockEntity::clientTick) : null;
     }
 
     @Override
@@ -180,10 +189,10 @@ public class TargetBlock extends BlockWithEntity {
             world.setBlockState(above, state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
             world.updateNeighbors(pos, Blocks.AIR);
             state.updateNeighbors(world, pos, Block.NOTIFY_ALL);
-            if (stack.hasCustomName()) {
+            if (stack.contains(DataComponentTypes.CUSTOM_NAME)) {
                 BlockEntity blockentity = world.getBlockEntity(pos);
                 if (blockentity instanceof TargetBlockEntity e) {
-                    GameProfile gameprofile = new GameProfile(null, stack.getName().getString());
+                    GameProfile gameprofile = new GameProfile(UUID.randomUUID(), stack.getName().getString());
                     e.setOwner(gameprofile);
                     e.setCustomName(stack.getName());
                     e.refresh();
@@ -193,11 +202,13 @@ public class TargetBlock extends BlockWithEntity {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         BlockPos blockPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
         BlockEntity blockentity = world.getBlockEntity(blockPos);
         if (blockentity instanceof TargetBlockEntity e) {
-            return new ItemStack(this).setCustomName(e.getCustomName());
+            final ItemStack stack = new ItemStack(this);
+            stack.set(DataComponentTypes.CUSTOM_NAME, e.getCustomName());
+            return stack;
         }
         return super.getPickStack(world, pos, state);
     }
@@ -229,6 +240,11 @@ public class TargetBlock extends BlockWithEntity {
                 level.setBlockState(pos, state.with(OUTPUT_POWER, 0), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
             }
         }
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return createCodec(TargetBlock::new);
     }
 
     @Override

@@ -10,8 +10,8 @@ import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.util.item.IItemHandler;
-import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.packets.s2c.event.GunReloadS2CPacket;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
@@ -73,7 +73,8 @@ public class LivingEntityReload {
             if (new GunReloadEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
                 return;
             }
-            NetworkHandler.sendToTrackingEntity(new GunReloadS2CPacket(shooter.getId(), currentGunItem), shooter);
+            NetworkClientHandler.GUN_RELOAD.sendToSurroundingPlayers(new GunReloadS2CPacket(shooter.getId(),
+                    currentGunItem), shooter);
             Bolt boltType = gunIndex.getGunData().getBolt();
             int ammoCount = iGun.getCurrentAmmoCount(currentGunItem) + (iGun.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT ? 1 : 0);
             if (ammoCount <= 0) {

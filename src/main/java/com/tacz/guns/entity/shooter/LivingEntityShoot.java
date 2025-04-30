@@ -7,7 +7,7 @@ import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.event.GunShootS2CPacket;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
@@ -88,7 +88,8 @@ public class LivingEntityShoot {
         if (new GunShootEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
             return ShootResult.FORGE_EVENT_CANCEL;
         }
-        NetworkHandler.sendToTrackingEntity(new GunShootS2CPacket(shooter.getId(), currentGunItem), shooter);
+        NetworkClientHandler.GUN_SHOOT.sendToSurroundingPlayers(new GunShootS2CPacket(shooter.getId(), currentGunItem),
+                shooter);
         // 执行枪械射击逻辑
         if (iGun instanceof AbstractGunItem logicGun) {
             BulletData bulletData = gunIndex.getBulletData();

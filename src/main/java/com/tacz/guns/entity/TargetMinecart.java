@@ -9,10 +9,11 @@ import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.init.ModBlocks;
 import com.tacz.guns.init.ModItems;
 import com.tacz.guns.init.ModSounds;
-import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.event.GunHurtS2CPacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -28,15 +29,16 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class TargetMinecart extends AbstractMinecartEntity implements ITargetEntity {
     public static EntityType<TargetMinecart> TYPE = EntityType.Builder.<TargetMinecart>create(TargetMinecart::new, SpawnGroup.MISC)
-            .setDimensions(0.75F, 2.4F)
+            .dimensions(0.75F, 2.4F)
             .maxTrackingRange(8)
             .build("target_minecart");
 
-    private @Nullable GameProfile gameProfile = null;
+    private Optional<GameProfile> gameProfile = Optional.empty();
 
     public TargetMinecart(EntityType<TargetMinecart> type, World world) {
         super(type, world);
@@ -51,7 +53,7 @@ public class TargetMinecart extends AbstractMinecartEntity implements ITargetEnt
         if (this.getWorld().isClient() || this.isRemoved()) {
             return;
         }
-        if (!(source.isIndirect())) {
+        if (source.isDirect()) {
             return;
         }
         Entity sourceEntity = source.getAttacker();
@@ -72,7 +74,9 @@ public class TargetMinecart extends AbstractMinecartEntity implements ITargetEnt
                 boolean isHeadshot = false;
                 float headshotMultiplier = 1;
                 new EntityHurtByGunEvent.Post(this, player, projectile.getGunId(), damage, isHeadshot, headshotMultiplier, LogicalSide.SERVER).post();
-                NetworkHandler.sendToDimension(new GunHurtS2CPacket(this.getId(), player.getId(), projectile.getGunId(), damage, isHeadshot, headshotMultiplier), this);
+                NetworkClientHandler.GUN_HURT.sendToAllPlayers(new GunHurtS2CPacket(this.getId(), player.getId(),
+                                projectile.getGunId(), damage, isHeadshot, headshotMultiplier),
+                        this.getWorld());
             }
         }
     }
@@ -93,38 +97,37 @@ public class TargetMinecart extends AbstractMinecartEntity implements ITargetEnt
     }
 
     @Override
-    public void dropItems(DamageSource source) {
+    protected void killAndDropSelf(DamageSource source) {
         this.remove(Entity.RemovalReason.KILLED);
         if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             ItemStack itemStack = new ItemStack(ModItems.TARGET_MINECART);
             if (this.hasCustomName()) {
-                itemStack.setCustomName(this.getCustomName());
+                itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
             }
             this.dropStack(itemStack);
         }
     }
 
     @Override
-    public Item getItem() {
-        return ModItems.TARGET_MINECART;
-    }
-
-    @Override
     public ItemStack getPickBlockStack() {
         ItemStack itemStack = new ItemStack(ModItems.TARGET_MINECART);
         if (this.hasCustomName()) {
-            itemStack.setCustomName(this.getCustomName());
+            itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
         }
         return itemStack;
     }
 
-    @Nullable
-    public GameProfile getGameProfile() {
-        if (this.gameProfile == null && this.getCustomName() != null) {
-            this.gameProfile = new GameProfile(null, this.getCustomName().getString());
-            SkullBlockEntity.loadProperties(this.gameProfile, gameProfile -> this.gameProfile = gameProfile);
+    public Optional<GameProfile> getGameProfile() {
+        if (this.gameProfile.isEmpty() && this.getCustomName() != null) {
+            SkullBlockEntity.fetchProfileByName(this.getCustomName().getString()).thenAccept(
+                    gameProfile1 -> this.gameProfile = gameProfile1);
         }
         return gameProfile;
+    }
+
+    @Override
+    public Item asItem() {
+        return ModItems.TARGET_MINECART;
     }
 
     @Override

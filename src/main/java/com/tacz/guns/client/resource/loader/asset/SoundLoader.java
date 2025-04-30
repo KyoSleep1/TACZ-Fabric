@@ -37,8 +37,8 @@ public final class SoundLoader {
                 return false;
             }
             try (InputStream zipEntryStream = zipFile.getInputStream(entry); OggAudioStream audioStream = new OggAudioStream(zipEntryStream)) {
-                ByteBuffer bytebuffer = audioStream.getBuffer();
-                Identifier registryName = new Identifier(namespace, path);
+                ByteBuffer bytebuffer = audioStream.readAll();
+                Identifier registryName = Identifier.of(namespace, path);
                 ClientAssetManager.INSTANCE.putSoundBuffer(registryName, new StaticSound(bytebuffer, audioStream.getFormat()));
                 return true;
             } catch (IOException ioe) {
@@ -54,7 +54,7 @@ public final class SoundLoader {
         if (Files.isDirectory(filePath)) {
             TacPathVisitor visitor = new TacPathVisitor(filePath.toFile(), root.getName(), ".ogg", (id, file) -> {
                 try (InputStream stream = Files.newInputStream(file); OggAudioStream audioStream = new OggAudioStream(stream)) {
-                    ByteBuffer bytebuffer = audioStream.getBuffer();
+                    ByteBuffer bytebuffer = audioStream.readAll();
                     ClientAssetManager.INSTANCE.putSoundBuffer(id, new StaticSound(bytebuffer, audioStream.getFormat()));
                 } catch (IOException exception) {
                     GunMod.LOGGER.warn(MARKER, "Failed to read sound file: {}", file);

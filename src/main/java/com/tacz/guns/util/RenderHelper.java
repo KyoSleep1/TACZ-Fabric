@@ -31,14 +31,14 @@ public final class RenderHelper {
     }
 
     private static void innerBlit(Matrix4f matrix, float x1, float x2, float y1, float y2, float blitOffset, float minU, float maxU, float minV, float maxV) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+       /** RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
         bufferbuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferbuilder.vertex(matrix, x1, y2, blitOffset).texture(minU, maxV).next();
         bufferbuilder.vertex(matrix, x2, y2, blitOffset).texture(maxU, maxV).next();
         bufferbuilder.vertex(matrix, x2, y1, blitOffset).texture(maxU, minV).next();
         bufferbuilder.vertex(matrix, x1, y1, blitOffset).texture(minU, minV).next();
-        BufferRenderer.draw(bufferbuilder.end());
+        BufferRenderer.draw(bufferbuilder.end()); **/
     }
 
     public static void enableItemEntityStencilTest() {
@@ -71,7 +71,7 @@ public final class RenderHelper {
         PlayerEntityRenderer renderer = (PlayerEntityRenderer) renderManager.getRenderer(player);
         VertexConsumerProvider buffer = mc.getBufferBuilders().getEntityVertexConsumers();
         int oldId = RenderSystem.getShaderTexture(0);
-        RenderSystem.setShaderTexture(0, player.getSkinTexture());
+        //RenderSystem.setShaderTexture(0, player.getSkinTexture());
 
         if (hand == Arm.RIGHT) {
             renderer.renderRightArm(matrixStack, buffer, combinedLight, player);

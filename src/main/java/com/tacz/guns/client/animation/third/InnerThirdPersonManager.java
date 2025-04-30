@@ -5,7 +5,6 @@ import com.tacz.guns.api.client.other.ThirdPersonManager;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.EntityPose;
@@ -22,22 +21,15 @@ public class InnerThirdPersonManager {
             ItemStack mainHandItem = entityIn.getMainHandStack();
             IGun iGun = IGun.getIGunOrNull(mainHandItem);
             if (iGun == null) {
-                PlayerAnimatorCompat.stopAllAnimation(entityIn);
                 return;
             }
             // 睡觉、爬梯、游泳、鞘翅飞行不播放第三人称动画
             if (entityIn.getPose() == EntityPose.SLEEPING || entityIn.isClimbing() || entityIn.isSwimming() || entityIn.getPose() == EntityPose.FALL_FLYING) {
-                PlayerAnimatorCompat.stopAllAnimation(entityIn);
                 return;
             }
 
-            TimelessAPI.getClientGunIndex(iGun.getGunId(mainHandItem)).ifPresent(index -> {
-                if (PlayerAnimatorCompat.hasPlayerAnimator3rd(entityIn, index)) {
-                    PlayerAnimatorCompat.playAnimation(entityIn, index, limbSwingAmount);
-                } else {
-                    playVanillaAnimation(entityIn, rightArm, leftArm, body, head, operator, index);
-                }
-            });
+            TimelessAPI.getClientGunIndex(iGun.getGunId(mainHandItem)).ifPresent(index
+                    -> playVanillaAnimation(entityIn, rightArm, leftArm, body, head, operator, index));
         }
     }
 

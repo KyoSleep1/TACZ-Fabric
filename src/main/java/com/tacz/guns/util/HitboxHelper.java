@@ -86,7 +86,7 @@ public class HitboxHelper {
         Vec3d velocity = new Vec3d(entity.getX() - entity.lastRenderX, entity.getY() - entity.lastRenderY, entity.getZ() - entity.lastRenderZ);
         // hitbox Delay compensation. Only if the shooter is a player (and the person hit is also a player) will this delay compensation be computed
         if (OtherConfig.SERVER_HITBOX_LATENCY_FIX.get() && entity instanceof ServerPlayerEntity player && owner instanceof ServerPlayerEntity serverPlayerOwner) {
-            int ping = MathHelper.floor((serverPlayerOwner.pingMilliseconds / 1000.0) * 20.0 + 0.5);
+            int ping = MathHelper.floor((serverPlayerOwner.networkHandler.getLatency() / 1000.0) * 20.0 + 0.5);
             boundingBox = getBoundingBox(player, ping);
             velocity = getVelocity(player, ping);
         }

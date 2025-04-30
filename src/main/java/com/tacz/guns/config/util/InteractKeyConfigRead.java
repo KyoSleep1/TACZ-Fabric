@@ -19,10 +19,10 @@ import java.util.List;
 public class InteractKeyConfigRead {
     private static final EnumMap<Type, List<Identifier>> WHITELIST = new EnumMap<>(Type.class);
     private static final EnumMap<Type, List<Identifier>> BLACKLIST = new EnumMap<>(Type.class);
-    private static final TagKey<Block> WHITELIST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, new Identifier(GunMod.MOD_ID, "interact_key/whitelist"));
-    private static final TagKey<Block> BLACKLIST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, new Identifier(GunMod.MOD_ID, "interact_key/blacklist"));
-    private static final TagKey<EntityType<?>> WHITELIST_ENTITIES = TagKey.of(RegistryKeys.ENTITY_TYPE, new Identifier(GunMod.MOD_ID, "interact_key/whitelist"));
-    private static final TagKey<EntityType<?>> BLACKLIST_ENTITIES = TagKey.of(RegistryKeys.ENTITY_TYPE, new Identifier(GunMod.MOD_ID, "interact_key/blacklist"));
+    private static final TagKey<Block> WHITELIST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of(GunMod.MOD_ID, "interact_key/whitelist"));
+    private static final TagKey<Block> BLACKLIST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of(GunMod.MOD_ID, "interact_key/blacklist"));
+    private static final TagKey<EntityType<?>> WHITELIST_ENTITIES = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(GunMod.MOD_ID, "interact_key/whitelist"));
+    private static final TagKey<EntityType<?>> BLACKLIST_ENTITIES = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(GunMod.MOD_ID, "interact_key/blacklist"));
 
     public static void init() {
         WHITELIST.clear();
@@ -73,7 +73,7 @@ public class InteractKeyConfigRead {
             if (StringUtils.isBlank(data)) {
                 return;
             }
-            Identifier id = new Identifier(data);
+            Identifier id = Identifier.of(data);
             storeList.computeIfAbsent(type, t -> Lists.newArrayList()).add(id);
         });
     }

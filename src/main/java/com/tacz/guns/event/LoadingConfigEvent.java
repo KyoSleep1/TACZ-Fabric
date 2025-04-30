@@ -1,6 +1,5 @@
 package com.tacz.guns.event;
 
-import com.tacz.guns.client.download.ClientGunPackDownloadManager;
 import com.tacz.guns.config.util.HeadShotAABBConfigRead;
 import com.tacz.guns.config.util.InteractKeyConfigRead;
 import com.tacz.guns.util.EnvironmentUtil;
@@ -22,9 +21,6 @@ public class LoadingConfigEvent {
         if (CONFIG_NAME.equals(fileName)) {
             HeadShotAABBConfigRead.init();
             InteractKeyConfigRead.init();
-            if (EnvironmentUtil.isClient()) {
-                ClientGunPackDownloadManager.downloadClientGunPack();
-            }
         }
     }
 }

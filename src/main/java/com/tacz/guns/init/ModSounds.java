@@ -11,7 +11,8 @@ public class ModSounds {
     public static final SoundEvent TARGET_HIT = register("target_block_hit", "target_block_hit");
 
     private static SoundEvent register(String path, String sound_path) {
-        return Registry.register(Registries.SOUND_EVENT, new Identifier(GunMod.MOD_ID, path), SoundEvent.of(new Identifier(GunMod.MOD_ID, sound_path)));
+        return Registry.register(Registries.SOUND_EVENT, Identifier.of(GunMod.MOD_ID, path),
+                SoundEvent.of(Identifier.of(GunMod.MOD_ID, sound_path)));
     }
 
     public static void init() {

@@ -23,8 +23,6 @@ public class NetworkClientHandler {
             .serverToClient(Identifier.of(GunMod.MOD_ID, "swap_item"), SwapItemS2CPacket::new);
     public static final S2CPacketType<LevelUpS2CPacket> LEVEL_UP = SimpleNetworking
             .serverToClient(Identifier.of(GunMod.MOD_ID, "level_up"), LevelUpS2CPacket::new);
-    public static final S2CPacketType<UpdateEntityDataS2CPacket> UPDATE_ENTITY_DATA = SimpleNetworking
-            .serverToClient(Identifier.of(GunMod.MOD_ID, "update_entity_data"), UpdateEntityDataS2CPacket::new);
     public static final S2CPacketType<SyncGunPackS2CPacket> SYNC_GUN_PACK = SimpleNetworking
             .serverToClient(Identifier.of(GunMod.MOD_ID, "sync_gun_pack"), SyncGunPackS2CPacket::new);
     public static final S2CPacketType<GunHurtS2CPacket> GUN_HURT = SimpleNetworking

@@ -46,12 +46,12 @@ public interface IAttachment {
     /**
      * 获取瞄具配件的缩放倍率的数字索引，仅瞄具配件可用
      */
-    int getZoomNumber(ItemStack attachmentStack);
+    int internalGetZoomNumber(ItemStack attachmentStack);
 
     /**
      * 设置瞄具配件的缩放倍率的数字索引
      */
-    void setZoomNumber(ItemStack attachmentStack, int zoomNumber);
+    void internalSetZoomNumber(ItemStack attachmentStack, int zoomNumber);
 
     /**
      * 配件类型

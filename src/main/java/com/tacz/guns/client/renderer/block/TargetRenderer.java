@@ -58,13 +58,8 @@ public class TargetRenderer implements BlockEntityRenderer<TargetBlockEntity> {
                 poseStack.translate(0, 1.25, 0);
                 poseStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(deg));
                 MinecraftClient minecraft = MinecraftClient.getInstance();
-                var map = minecraft.getSkinProvider().getTextures(blockEntity.getOwner());
-                Identifier skin;
-                if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-                    skin = minecraft.getSkinProvider().loadSkin(map.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
-                } else {
-                    skin = DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(blockEntity.getOwner()));
-                }
+                var map = minecraft.getSkinProvider().getSkinTextures(blockEntity.getOwner());
+                Identifier skin = map.texture();
                 headModel.visible = true;
                 RenderLayer skullRenderType = RenderLayer.getEntityTranslucentCull(skin);
                 headModel.render(poseStack, ModelTransformationMode.NONE, bufferIn.getBuffer(skullRenderType), combinedLightIn, OverlayTexture.DEFAULT_UV);

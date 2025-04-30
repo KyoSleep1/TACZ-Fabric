@@ -2,7 +2,7 @@ package com.tacz.guns.resource.network;
 
 import com.google.common.collect.Maps;
 import com.tacz.guns.client.resource.ClientGunPackLoader;
-import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.SyncGunPackS2CPacket;
 import com.tacz.guns.resource.loader.asset.*;
 import com.tacz.guns.resource.loader.index.CommonAmmoIndexLoader;
@@ -10,7 +10,6 @@ import com.tacz.guns.resource.loader.index.CommonAttachmentIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonGunIndexLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -35,21 +34,21 @@ public class CommonGunPackNetwork {
     }
 
     public static void syncClient(MinecraftServer server) {
-        server.getPlayerManager().getPlayerList().forEach(player -> NetworkHandler.sendToClientPlayer(
-                new SyncGunPackS2CPacket(NETWORK_CACHE), player));
+        server.getPlayerManager().getPlayerList().forEach(player ->
+                NetworkClientHandler.SYNC_GUN_PACK.sendToPlayer(new SyncGunPackS2CPacket(NETWORK_CACHE), player));
     }
 
     public static void syncClientExceptSelf(MinecraftServer server, @Nullable PlayerEntity self) {
         server.getPlayerManager().getPlayerList().forEach(player -> {
             if (!player.equals(self)) {
                 SyncGunPackS2CPacket message = new SyncGunPackS2CPacket(NETWORK_CACHE);
-                NetworkHandler.sendToClientPlayer(message, player);
+                NetworkClientHandler.SYNC_GUN_PACK.sendToPlayer(message, player);
             }
         });
     }
 
     public static void syncClient(ServerPlayerEntity player) {
-        ServerPlayNetworking.send(player, new SyncGunPackS2CPacket(NETWORK_CACHE));
+        NetworkClientHandler.SYNC_GUN_PACK.sendToPlayer(new SyncGunPackS2CPacket(NETWORK_CACHE), player);
     }
 
     public static void toNetwork(EnumMap<DataType, Map<Identifier, String>> cache, PacketByteBuf buf) {

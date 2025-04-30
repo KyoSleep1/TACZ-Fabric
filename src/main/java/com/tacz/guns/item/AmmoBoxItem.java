@@ -13,6 +13,8 @@ import com.tacz.guns.inventory.tooltip.AmmoBoxTooltip;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,8 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -30,21 +31,17 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public class AmmoBoxItem extends Item implements DyeableItem, AmmoBoxItemDataAccessor {
+public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor {
     public static final Identifier PROPERTY_NAME = Identifier.of(GunMod.MOD_ID, "ammo_statue");
 
     public static final int IRON_LEVEL = 0;
     public static final int GOLD_LEVEL = 1;
     public static final int DIAMOND_LEVEL = 2;
-
-    private static final String DISPLAY_TAG = "display";
-    private static final String COLOR_TAG = "color";
 
     private static final int OPEN = 0;
     private static final int CLOSE = 1;
@@ -92,8 +89,9 @@ public class AmmoBoxItem extends Item implements DyeableItem, AmmoBoxItemDataAcc
     }
 
     private static int getTagColor(ItemStack stack) {
-        NbtCompound compoundtag = stack.getSubNbt(DISPLAY_TAG);
-        return compoundtag != null && compoundtag.contains(COLOR_TAG, NbtElement.NUMBER_TYPE) ? compoundtag.getInt(COLOR_TAG) : 0x727d6b;
+        final DyedColorComponent dyedColorComponent = stack.get(DataComponentTypes.DYED_COLOR);
+        if (dyedColorComponent == null) return 0x727d6b;
+        return dyedColorComponent.rgb();
     }
 
     @Override
@@ -272,17 +270,17 @@ public class AmmoBoxItem extends Item implements DyeableItem, AmmoBoxItemDataAcc
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World pLevel, List<Text> components, TooltipContext isAdvanced) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if (isAllTypeCreative(stack)) {
-            components.add(Text.translatable("tooltip.tacz.ammo_box.usage.all_type_creative").formatted(Formatting.GOLD));
+            tooltip.add(Text.translatable("tooltip.tacz.ammo_box.usage.all_type_creative").formatted(Formatting.GOLD));
             return;
         }
         if (isCreative(stack)) {
-            components.add(Text.translatable("tooltip.tacz.ammo_box.usage.creative.1").formatted(Formatting.YELLOW));
-            components.add(Text.translatable("tooltip.tacz.ammo_box.usage.creative.2").formatted(Formatting.YELLOW));
+            tooltip.add(Text.translatable("tooltip.tacz.ammo_box.usage.creative.1").formatted(Formatting.YELLOW));
+            tooltip.add(Text.translatable("tooltip.tacz.ammo_box.usage.creative.2").formatted(Formatting.YELLOW));
             return;
         }
-        components.add(Text.translatable("tooltip.tacz.ammo_box.usage.deposit").formatted(Formatting.GRAY));
-        components.add(Text.translatable("tooltip.tacz.ammo_box.usage.remove").formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("tooltip.tacz.ammo_box.usage.deposit").formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("tooltip.tacz.ammo_box.usage.remove").formatted(Formatting.GRAY));
     }
 }

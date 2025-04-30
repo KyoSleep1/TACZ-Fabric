@@ -69,11 +69,16 @@ public class BedrockCubePerFace implements BedrockCube {
         return new BedrockPolygon(positionsIn, u1, v1, u2, v2, texWidth, texHeight, false, direction);
     }
 
-
     @Override
     public void compile(MatrixStack.Entry entry, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
         Matrix4f matrix4f = entry.getPositionMatrix();
         Matrix3f matrix3f = entry.getNormalMatrix();
+
+        final int ir = (int) (red * 255.0F);
+        final int ig = (int) (green * 255.0F);
+        final int ib = (int) (blue * 255.0F);
+        final int ia = (int) (alpha * 255.0F);
+        final int packedColor = (ia << 24) | (ib << 16) | (ig << 8) | ir;
 
         for (BedrockPolygon polygon : this.polygons) {
             Vector3f vector3f = new Vector3f(polygon.normal);
@@ -88,7 +93,8 @@ public class BedrockCubePerFace implements BedrockCube {
                 float z = vertex.pos.z() / 16.0F;
                 Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
                 vector4f.mul(matrix4f);
-                consumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, nx, ny, nz);
+                consumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), packedColor, vertex.u, vertex.v, overlay,
+                        light, nx, ny, nz);
             }
         }
     }

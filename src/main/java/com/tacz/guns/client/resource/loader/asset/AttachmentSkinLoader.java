@@ -39,7 +39,7 @@ public final class AttachmentSkinLoader {
                 return false;
             }
             try (InputStream stream = zipFile.getInputStream(entry)) {
-                Identifier registryName = new Identifier(namespace, path);
+                Identifier registryName = Identifier.of(namespace, path);
                 AttachmentSkin display = ClientGunPackLoader.GSON.fromJson(IOReader.toString(stream, StandardCharsets.UTF_8), AttachmentSkin.class);
                 ClientAssetManager.INSTANCE.putAttachmentSkin(registryName, display);
                 return true;

@@ -2,7 +2,7 @@ package com.tacz.guns.inventory;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
-import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.CraftS2CPacket;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.entity.ItemEntity;
@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -72,13 +73,13 @@ public class GunSmithTableMenu extends ScreenHandler {
             // Give the player the corresponding item
             World world = player.getWorld();
             if (!world.isClient) {
-                ItemEntity entity = new ItemEntity(world, player.getX(), player.getY() + 0.5, player.getZ(), recipe.getOutput(world.getRegistryManager()).copy());
+                ItemEntity entity = new ItemEntity(world, player.getX(), player.getY() + 0.5, player.getZ(), recipe.getResult(world.getRegistryManager()).copy());
                 entity.setPickupDelay(0);
                 world.spawnEntity(entity);
             }
             // Update, otherwise the client display is incorrect
             player.playerScreenHandler.updateToClient();
-            NetworkHandler.sendToClientPlayer(new CraftS2CPacket(this.syncId), player);
+            NetworkClientHandler.CRAFT.sendToPlayer(new CraftS2CPacket(this.syncId), (ServerPlayerEntity) player);
         }));
     }
 }

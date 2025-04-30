@@ -27,24 +27,24 @@ import java.util.Optional;
 
 public class InternalAssetLoader {
     // 曳光弹模型
-    public static final Identifier DEFAULT_BULLET_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/entity/basic_bullet.png");
-    public static final Identifier DEFAULT_BULLET_MODEL = new Identifier(GunMod.MOD_ID, "models/bedrock/basic_bullet.json");
+    public static final Identifier DEFAULT_BULLET_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/entity/basic_bullet.png");
+    public static final Identifier DEFAULT_BULLET_MODEL = Identifier.of(GunMod.MOD_ID, "models/bedrock/basic_bullet.json");
     // 射击标靶车
-    public static final Identifier TARGET_MINECART_MODEL_LOCATION = new Identifier(GunMod.MOD_ID, "models/bedrock/target_minecart.json");
-    public static final Identifier TARGET_MINECART_TEXTURE_LOCATION = new Identifier(GunMod.MOD_ID, "textures/entity/target_minecart.png");
-    public static final Identifier ENTITY_EMPTY_TEXTURE = new Identifier(GunMod.MOD_ID, "textures/entity/empty.png");
+    public static final Identifier TARGET_MINECART_MODEL_LOCATION = Identifier.of(GunMod.MOD_ID, "models/bedrock/target_minecart.json");
+    public static final Identifier TARGET_MINECART_TEXTURE_LOCATION = Identifier.of(GunMod.MOD_ID, "textures/entity/target_minecart.png");
+    public static final Identifier ENTITY_EMPTY_TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/entity/empty.png");
     // 射击标靶
-    public static final Identifier TARGET_MODEL_LOCATION = new Identifier(GunMod.MOD_ID, "models/bedrock/target.json");
-    public static final Identifier TARGET_TEXTURE_LOCATION = new Identifier(GunMod.MOD_ID, "textures/block/target.png");
+    public static final Identifier TARGET_MODEL_LOCATION = Identifier.of(GunMod.MOD_ID, "models/bedrock/target.json");
+    public static final Identifier TARGET_TEXTURE_LOCATION = Identifier.of(GunMod.MOD_ID, "textures/block/target.png");
     // 雕像
-    public static final Identifier STATUE_MODEL_LOCATION = new Identifier(GunMod.MOD_ID, "models/bedrock/statue.json");
-    public static final Identifier STATUE_TEXTURE_LOCATION = new Identifier(GunMod.MOD_ID, "textures/block/statue.png");
+    public static final Identifier STATUE_MODEL_LOCATION = Identifier.of(GunMod.MOD_ID, "models/bedrock/statue.json");
+    public static final Identifier STATUE_TEXTURE_LOCATION = Identifier.of(GunMod.MOD_ID, "textures/block/statue.png");
     // 改装台
-    public static final Identifier SMITH_TABLE_MODEL_LOCATION = new Identifier(GunMod.MOD_ID, "models/bedrock/gun_smith_table.json");
-    public static final Identifier SMITH_TABLE_TEXTURE_LOCATION = new Identifier(GunMod.MOD_ID, "textures/block/gun_smith_table.png");
+    public static final Identifier SMITH_TABLE_MODEL_LOCATION = Identifier.of(GunMod.MOD_ID, "models/bedrock/gun_smith_table.json");
+    public static final Identifier SMITH_TABLE_TEXTURE_LOCATION = Identifier.of(GunMod.MOD_ID, "textures/block/gun_smith_table.png");
     // 默认动画
-    private static final Identifier DEFAULT_PISTOL_ANIMATIONS_LOC = new Identifier(GunMod.MOD_ID, "animations/pistol_default.animation.json");
-    private static final Identifier DEFAULT_RIFLE_ANIMATIONS_LOC = new Identifier(GunMod.MOD_ID, "animations/rifle_default.animation.json");
+    private static final Identifier DEFAULT_PISTOL_ANIMATIONS_LOC = Identifier.of(GunMod.MOD_ID, "animations/pistol_default.animation.json");
+    private static final Identifier DEFAULT_RIFLE_ANIMATIONS_LOC = Identifier.of(GunMod.MOD_ID, "animations/rifle_default.animation.json");
     // 内部资源缓存
     private static final Map<Identifier, BedrockModel> BEDROCK_MODELS = Maps.newHashMap();
     private static List<ObjectAnimation> defaultPistolAnimations;

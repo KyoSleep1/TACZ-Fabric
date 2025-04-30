@@ -18,6 +18,6 @@ public class ModEntities {
     }
 
     private static <T extends Entity> EntityType<T> register(String path, EntityType<T> type) {
-        return Registry.register(Registries.ENTITY_TYPE, new Identifier(GunMod.MOD_ID, path), type);
+        return Registry.register(Registries.ENTITY_TYPE, Identifier.of(GunMod.MOD_ID, path), type);
     }
 }

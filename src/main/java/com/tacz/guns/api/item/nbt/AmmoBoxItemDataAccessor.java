@@ -4,53 +4,37 @@ import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.init.ModItemComponents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 
 public interface AmmoBoxItemDataAccessor extends IAmmoBox {
-    String AMMO_ID_TAG = "AmmoId";
-    String AMMO_COUNT_TAG = "AmmoCount";
-    String CREATIVE_TAG = "Creative";
-    String ALL_TYPE_CREATIVE_TAG = "AllTypeCreative";
-    String LEVEL_TAG = "Level";
 
     @Override
     default Identifier getAmmoId(ItemStack ammoBox) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
-        if (tag.contains(AMMO_ID_TAG, NbtElement.STRING_TYPE)) {
-            return new Identifier(tag.getString(AMMO_ID_TAG));
-        }
-        return DefaultAssets.EMPTY_AMMO_ID;
+        return ammoBox.getOrDefault(ModItemComponents.AMMO_BOX_ID, DefaultAssets.EMPTY_AMMO_ID);
     }
 
     @Override
     default void setAmmoId(ItemStack ammoBox, Identifier ammoId) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
-        tag.putString(AMMO_ID_TAG, ammoId.toString());
+        ammoBox.set(ModItemComponents.AMMO_BOX_ID, ammoId);
     }
 
     @Override
     default int getAmmoCount(ItemStack ammoBox) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
         if (isAllTypeCreative(ammoBox) || isCreative(ammoBox)) {
             return Integer.MAX_VALUE;
         }
-        if (tag.contains(AMMO_COUNT_TAG, NbtElement.INT_TYPE)) {
-            return tag.getInt(AMMO_COUNT_TAG);
-        }
-        return 0;
+        return ammoBox.getOrDefault(ModItemComponents.AMMO_BOX_COUNT, 0);
     }
 
     @Override
     default void setAmmoCount(ItemStack ammoBox, int count) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
         if (isCreative(ammoBox)) {
-            tag.putInt(AMMO_COUNT_TAG, Integer.MAX_VALUE);
+            ammoBox.set(ModItemComponents.AMMO_BOX_COUNT, Integer.MAX_VALUE);
             return;
         }
-        tag.putInt(AMMO_COUNT_TAG, count);
+        ammoBox.set(ModItemComponents.AMMO_BOX_COUNT, count);
     }
 
     @Override
@@ -71,54 +55,40 @@ public interface AmmoBoxItemDataAccessor extends IAmmoBox {
 
     @Override
     default ItemStack setAmmoLevel(ItemStack ammoBox, int level) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
-        tag.putInt(LEVEL_TAG, Math.max(level, 0));
+        ammoBox.set(ModItemComponents.AMMO_BOX_LEVEL, Math.max(level, 0));
         return ammoBox;
     }
 
     @Override
     default int getAmmoLevel(ItemStack ammoBox) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
-        if (tag.contains(LEVEL_TAG, NbtElement.INT_TYPE)) {
-            return tag.getInt(LEVEL_TAG);
-        }
-        return 0;
+        return ammoBox.getOrDefault(ModItemComponents.AMMO_BOX_LEVEL, 0);
     }
 
     @Override
     default boolean isCreative(ItemStack ammoBox) {
-        NbtCompound tag = ammoBox.getNbt();
-        if (tag != null && tag.contains(CREATIVE_TAG, NbtElement.BYTE_TYPE)) {
-            return tag.getBoolean(CREATIVE_TAG);
-        }
-        return false;
+        return ammoBox.getOrDefault(ModItemComponents.AMMO_BOX_CREATIVE, false);
     }
 
     @Override
     default boolean isAllTypeCreative(ItemStack ammoBox) {
-        NbtCompound tag = ammoBox.getNbt();
-        if (tag != null && tag.contains(ALL_TYPE_CREATIVE_TAG, NbtElement.BYTE_TYPE)) {
-            return tag.getBoolean(ALL_TYPE_CREATIVE_TAG);
-        }
-        return false;
+        return ammoBox.getOrDefault(ModItemComponents.AMMO_BOX_ALL_TYPE_CREATIVE, false);
     }
 
     @Override
     default ItemStack setCreative(ItemStack ammoBox, boolean isAllType) {
-        NbtCompound tag = ammoBox.getOrCreateNbt();
         if (isAllType) {
             // 移除可能存在的创造模式标签
-            if (tag.contains(CREATIVE_TAG, NbtElement.BYTE_TYPE)) {
-                tag.remove(CREATIVE_TAG);
+            if (this.isCreative(ammoBox)) {
+                ammoBox.remove(ModItemComponents.AMMO_BOX_CREATIVE);
             }
-            tag.putBoolean(ALL_TYPE_CREATIVE_TAG, true);
+            ammoBox.set(ModItemComponents.AMMO_BOX_ALL_TYPE_CREATIVE, true);
             return ammoBox;
         }
         // 移除可能存在的全类型标签
-        if (tag.contains(ALL_TYPE_CREATIVE_TAG, NbtElement.BYTE_TYPE)) {
-            tag.remove(ALL_TYPE_CREATIVE_TAG);
+        if (this.isAllTypeCreative(ammoBox)) {
+            ammoBox.remove(ModItemComponents.AMMO_BOX_ALL_TYPE_CREATIVE);
         }
-        tag.putBoolean(CREATIVE_TAG, true);
+        ammoBox.set(ModItemComponents.AMMO_BOX_CREATIVE, true);
         return ammoBox;
     }
 }

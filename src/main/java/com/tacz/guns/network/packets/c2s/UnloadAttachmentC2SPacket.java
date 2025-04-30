@@ -5,6 +5,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
+import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.RefreshRefitScreenS2CPacket;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.entity.ItemEntity;
@@ -49,7 +50,7 @@ public class UnloadAttachmentC2SPacket implements HandledPacket<ServerPlayerEnti
                     dropAllAmmo(player, iGun, gunItem);
                 }
                 player.playerScreenHandler.sendContentUpdates();
-                sender.sendPacket(new RefreshRefitScreenS2CPacket());
+                NetworkClientHandler.REFRESH_REFIT_SCREEN.sendToPlayer(new RefreshRefitScreenS2CPacket(), player);
             }
         }
     }

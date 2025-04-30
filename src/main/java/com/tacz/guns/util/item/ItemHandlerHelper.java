@@ -26,25 +26,15 @@ public class ItemHandlerHelper {
     }
 
     public static boolean canItemStacksStack(@NotNull ItemStack a, @NotNull ItemStack b) {
-        if (!a.isEmpty() && ItemStack.areItemsEqual(a, b) && a.hasNbt() == b.hasNbt()) {
-            return (!a.hasNbt() || a.getNbt().equals(b.getNbt()));
+        if (!a.isEmpty() && ItemStack.areItemsEqual(a, b)) {
+            return ItemStack.areItemsAndComponentsEqual(a, b);
         } else {
             return false;
         }
     }
 
     public static boolean canItemStacksStackRelaxed(@NotNull ItemStack a, @NotNull ItemStack b) {
-        if (!a.isEmpty() && !b.isEmpty() && a.getItem() == b.getItem()) {
-            if (!a.isStackable()) {
-                return false;
-            } else if (a.hasNbt() != b.hasNbt()) {
-                return false;
-            } else {
-                return (!a.hasNbt() || a.getNbt().equals(b.getNbt()));
-            }
-        } else {
-            return false;
-        }
+        return !a.isEmpty() && !b.isEmpty() && a.isStackable() && ItemStack.areItemsAndComponentsEqual(a, b);
     }
 
     @NotNull

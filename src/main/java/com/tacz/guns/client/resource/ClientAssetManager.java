@@ -3,7 +3,6 @@ package com.tacz.guns.client.resource;
 import com.google.common.collect.Maps;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
-import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
 import com.tacz.guns.client.resource.pojo.display.ammo.AmmoDisplay;
@@ -12,7 +11,6 @@ import com.tacz.guns.client.resource.pojo.display.gun.GunDisplay;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 import com.tacz.guns.client.resource.pojo.skin.attachment.AttachmentSkin;
-import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.StaticSound;
@@ -63,8 +61,6 @@ public enum ClientAssetManager {
     private final Map<String, Map<String, String>> languages = Maps.newHashMap();
 
     private final Map<Identifier, BedrockAttachmentModel> tempAttachmentModelMap = Maps.newHashMap();
-
-    private final Map<Identifier, BedrockGunModel> tempGunModelMap = Maps.newHashMap();
 
     @Nullable
     private static BedrockAttachmentModel getAttachmentModel(BedrockModelPOJO modelPOJO) {
@@ -208,8 +204,6 @@ public enum ClientAssetManager {
         this.models.clear();
         this.soundBuffers.clear();
         this.languages.clear();
-        this.tempGunModelMap.clear();
         this.tempAttachmentModelMap.clear();
-        PlayerAnimatorCompat.clearAllAnimationCache();
     }
 }

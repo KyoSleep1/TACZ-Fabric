@@ -43,7 +43,7 @@ public final class CommonGunIndexLoader {
             }
             try (InputStream stream = zipFile.getInputStream(entry)) {
                 String json = IOReader.toString(stream, StandardCharsets.UTF_8);
-                Identifier registryName = new Identifier(namespace, id);
+                Identifier registryName = Identifier.of(namespace, id);
                 loadGunFromJsonString(registryName, json);
                 CommonGunPackNetwork.addData(DataType.GUN_INDEX, registryName, json);
             } catch (IllegalArgumentException | JsonSyntaxException | JsonIOException exception) {

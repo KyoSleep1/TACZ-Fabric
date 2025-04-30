@@ -5,17 +5,20 @@ import com.tacz.guns.block.TargetBlock;
 import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.init.ModBlocks;
 import com.tacz.guns.init.ModSounds;
+import com.tacz.guns.util.NBTUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
@@ -42,6 +45,9 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
 
     public TargetBlockEntity(BlockPos pos, BlockState blockState) {
         super(TYPE, pos, blockState);
+        this.setComponents(ComponentMap.builder()
+                .add(DataComponentTypes.PROFILE, null)
+                .build());
     }
 
     public static void clientTick(World level, BlockPos pos, BlockState state, TargetBlockEntity pBlockEntity) {
@@ -60,31 +66,33 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
 
     public void setOwner(@Nullable GameProfile owner) {
         this.owner = owner;
-        SkullBlockEntity.loadProperties(this.owner, gameProfile -> {
-            this.owner = gameProfile;
-            this.refresh();
-        });
+        if (owner == null) return;
+        SkullBlockEntity.fetchProfileByName(this.owner.getName())
+                .thenAccept(gameProfile -> {
+                    this.owner = gameProfile.orElse(null);
+                    this.refresh();
+                });
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        if (tag.contains(OWNER_TAG, NbtElement.COMPOUND_TYPE)) {
-            this.owner = NbtHelper.toGameProfile(tag.getCompound(OWNER_TAG));
-        }
-        if (tag.contains(CUSTOM_NAME_TAG, NbtElement.STRING_TYPE)) {
-            this.name = Text.Serializer.fromJson(tag.getString(CUSTOM_NAME_TAG));
-        }
-    }
-
-    @Override
-    protected void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
         if (owner != null) {
-            tag.put(OWNER_TAG, NbtHelper.writeGameProfile(new NbtCompound(), owner));
+            nbt.put(OWNER_TAG, NBTUtil.writeGameProfile(new NbtCompound(), owner));
         }
         if (this.name != null) {
-            tag.putString(CUSTOM_NAME_TAG, Text.Serializer.toJson(this.name));
+            nbt.putString(CUSTOM_NAME_TAG, Text.Serialization.toJsonString(this.name, registryLookup));
+        }
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        if (nbt.contains(OWNER_TAG, NbtElement.COMPOUND_TYPE)) {
+            this.owner = NBTUtil.readGameProfile(nbt.getCompound(OWNER_TAG));
+        }
+        if (nbt.contains(CUSTOM_NAME_TAG, NbtElement.STRING_TYPE)) {
+            this.name = Text.Serialization.fromJson(nbt.getString(CUSTOM_NAME_TAG), registryLookup);
         }
     }
 
@@ -109,8 +117,8 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
     }
 
     public void refresh() {

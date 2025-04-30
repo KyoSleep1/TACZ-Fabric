@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class TypeButton extends ButtonWidget {
-    private static final Identifier TEXTURE = new Identifier(GunMod.MOD_ID, "textures/gui/gun_smith_table.png");
+    private static final Identifier TEXTURE = Identifier.of(GunMod.MOD_ID, "textures/gui/gun_smith_table.png");
     private final ItemStack stack;
     private boolean isSelected = false;
 
@@ -20,7 +20,7 @@ public class TypeButton extends ButtonWidget {
     }
 
     @Override
-    protected void renderButton(@NotNull DrawContext gui, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderWidget(@NotNull DrawContext gui, int pMouseX, int pMouseY, float pPartialTick) {
         RenderSystem.enableDepthTest();
 
         int vOffset = isSelected() ? 204 + this.height : 204;
