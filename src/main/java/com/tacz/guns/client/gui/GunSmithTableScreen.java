@@ -11,6 +11,7 @@ import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.components.smith.ResultButton;
 import com.tacz.guns.client.gui.components.smith.TypeButton;
+import com.tacz.guns.client.gui.widget.CustomTexturedButtonWidget;
 import com.tacz.guns.client.resource.ClientAssetManager;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
@@ -25,10 +26,8 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
@@ -85,7 +84,7 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
         this.selectedRecipeList = recipes.get(selectedType);
 
         this.indexPage = 0;
-        this.selectedRecipe = this.getSelectedRecipe(this.selectedRecipeList.get(0));
+        this.selectedRecipe = this.getSelectedRecipe(this.selectedRecipeList.getFirst());
         this.getPlayerIngredientCount(this.selectedRecipe);
     }
 
@@ -174,9 +173,8 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
     }
 
     private void addCraftButton() {
-        //TODO: 138, 164, 18
-        this.addDrawableChild(new TexturedButtonWidget(x + 289, y + 162, 48, 18,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 289, y + 162, 48, 18, 138, 164, 18,
+                TEXTURE, b -> {
             if (this.selectedRecipe != null && playerIngredientCount != null) {
                 // 检查是否能合成，不能就不发包
                 List<GunSmithTableIngredient> inputs = selectedRecipe.getInputs();
@@ -198,21 +196,19 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
     }
 
     private void addUrlButton() {
-        //TODO: 149, 211, 18
-        this.addDrawableChild(new TexturedButtonWidget(x + 112, y + 164, 18, 18,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 112, y + 164, 18, 18, 149, 211, 18,
+                TEXTURE, b -> {
             if (this.selectedRecipe != null) {
                 ItemStack output = selectedRecipe.getOutput();
                 Item item = output.getItem();
                 Identifier id;
-                if (item instanceof IGun iGun) {
-                    id = iGun.getGunId(output);
-                } else if (item instanceof IAttachment iAttachment) {
-                    id = iAttachment.getAttachmentId(output);
-                } else if (item instanceof IAmmo iAmmo) {
-                    id = iAmmo.getAmmoId(output);
-                } else {
-                    return;
+                switch (item) {
+                    case IGun iGun -> id = iGun.getGunId(output);
+                    case IAttachment iAttachment -> id = iAttachment.getAttachmentId(output);
+                    case IAmmo iAmmo -> id = iAmmo.getAmmoId(output);
+                    case null, default -> {
+                        return;
+                    }
                 }
 
                 PackInfo packInfo = ClientAssetManager.INSTANCE.getPackInfo(id);
@@ -284,7 +280,7 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
             this.selectedType = type;
             this.selectedRecipeList = recipes.get(type);
             this.indexPage = 0;
-            this.selectedRecipe = getSelectedRecipe(this.selectedRecipeList.get(0));
+            this.selectedRecipe = getSelectedRecipe(this.selectedRecipeList.getFirst());
             this.getPlayerIngredientCount(this.selectedRecipe);
             this.init();
         });
@@ -295,16 +291,15 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
     }
 
     private void addIndexPageButtons() {
-        //TODO: 40, 166, 6
-        this.addDrawableChild(new TexturedButtonWidget(x + 143, y + 56, 96, 6, new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 143, y + 56, 96, 6, 40, 166,
+                6, TEXTURE, b -> {
             if (this.indexPage > 0) {
                 this.indexPage--;
                 this.init();
             }
         }));
-        //TODO: 40, 186, 6
-        this.addDrawableChild(new TexturedButtonWidget(x + 143, y + 171, 96, 6,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 143, y + 171, 96, 6, 40, 186,
+                6, TEXTURE, b -> {
             if (selectedRecipeList != null && !selectedRecipeList.isEmpty()) {
                 int maxIndexPage = (selectedRecipeList.size() - 1) / 6;
                 if (this.indexPage < maxIndexPage) {
@@ -316,17 +311,15 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
     }
 
     private void addTypePageButtons() {
-        //TODO: 0, 162, 20
-        this.addDrawableChild(new TexturedButtonWidget(x + 136, y + 4, 18, 20,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 136, y + 4, 18, 20, 0, 162,
+                20, TEXTURE, b -> {
             if (this.typePage > 0) {
                 this.typePage--;
                 this.init();
             }
         }));
-        //TODO: 20, 162, 20
-        this.addDrawableChild(new TexturedButtonWidget(x + 327, y + 4, 18, 20,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 327, y + 4, 18, 20, 20, 162,
+                20, TEXTURE, b -> {
             int maxIndexPage = (recipes.size() - 1) / 7;
             if (this.typePage < maxIndexPage) {
                 this.typePage++;
@@ -336,19 +329,16 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
     }
 
     private void addScaleButtons() {
-        //TODO: 188, 173, 10
-        this.addDrawableChild(new TexturedButtonWidget(x + 5, y + 5, 10, 10,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 5, y + 5, 10, 10, 188, 173,
+                10, TEXTURE, b -> {
             this.scale = Math.min(this.scale + 20, 200);
         }));
-        //TODO: 200, 173, 10
-        this.addDrawableChild(new TexturedButtonWidget(x + 17, y + 5, 10, 10,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 17, y + 5, 10, 10, 0, 173,
+                10, TEXTURE, b -> {
             this.scale = Math.max(this.scale - 20, 10);
         }));
-        //TODO: 212, 173, 10
-        this.addDrawableChild(new TexturedButtonWidget(x + 29, y + 5, 10, 10,
-                new ButtonTextures(TEXTURE, TEXTURE), b -> {
+        this.addDrawableChild(new CustomTexturedButtonWidget(x + 29, y + 5, 10, 10, 212, 173,
+                10, TEXTURE, b -> {
             this.scale = 70;
         }));
     }
@@ -376,14 +366,13 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
         ItemStack output = recipe.getOutput();
         Item item = output.getItem();
         Identifier id;
-        if (item instanceof IGun iGun) {
-            id = iGun.getGunId(output);
-        } else if (item instanceof IAttachment iAttachment) {
-            id = iAttachment.getAttachmentId(output);
-        } else if (item instanceof IAmmo iAmmo) {
-            id = iAmmo.getAmmoId(output);
-        } else {
-            return;
+        switch (item) {
+            case IGun iGun -> id = iGun.getGunId(output);
+            case IAttachment iAttachment -> id = iAttachment.getAttachmentId(output);
+            case IAmmo iAmmo -> id = iAmmo.getAmmoId(output);
+            case null, default -> {
+                return;
+            }
         }
 
         PackInfo packInfo = ClientAssetManager.INSTANCE.getPackInfo(id);
@@ -403,7 +392,8 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
             int offsetY = (y + 123) * 2;
             int nameWidth = textRenderer.getWidth(nameText);
             Text ver = Text.literal("v" + packInfo.getVersion()).formatted(Formatting.UNDERLINE);
-            gui.drawText(textRenderer, ver, (int) (offsetX + nameWidth * 0.75f / 0.5f + 5), offsetY, Formatting.DARK_GRAY.getColorValue(), false);
+            gui.drawText(textRenderer, ver, (int) (offsetX + nameWidth * 0.75f / 0.5f + 5), offsetY,
+                    Formatting.DARK_GRAY.getColorValue(), false);
             offsetY += 14;
 
             String descKey = packInfo.getDescription();
@@ -557,7 +547,7 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
 
     @Override
     protected void drawBackground(@NotNull DrawContext gui, float partialTick, int mouseX, int mouseY) {
-        this.renderBackground(gui, mouseX, mouseY, partialTick);
+        this.renderInGameBackground(gui);
         gui.drawTexture(SIDE, x, y, 0, 0, 134, 187);
         gui.drawTexture(TEXTURE, x + 136, y + 27, 0, 0, 208, 160);
     }
