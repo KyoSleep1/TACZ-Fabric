@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = RaycastContext.class)
 public class RaycastContextMixin {
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/ShapeContext;of(Lnet/minecraft/entity/Entity;)Lnet/minecraft/block/ShapeContext;"))
-    private ShapeContext contextRedirect(Entity entity) {
+    @Redirect(method = "<init>*", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/ShapeContext;of(Lnet/minecraft/entity/Entity;)Lnet/minecraft/block/ShapeContext;"))
+    private static ShapeContext contextRedirect(Entity entity) {
         return entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
     }
 }
