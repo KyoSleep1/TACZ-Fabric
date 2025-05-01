@@ -5,6 +5,7 @@ import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
 import com.tacz.guns.init.*;
+import com.tacz.guns.item.tag.Tags;
 import com.tacz.guns.resource.DedicatedServerReloadManager;
 import com.tacz.guns.util.EnvironmentUtil;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
@@ -24,6 +25,9 @@ public class GunMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		Tags.Blocks.init();
+		Tags.Items.init();
+
 		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID,
 				ModConfig.Type.COMMON, CommonConfig.init());
 		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID,

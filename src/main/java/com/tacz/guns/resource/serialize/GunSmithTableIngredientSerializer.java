@@ -17,7 +17,7 @@ public class GunSmithTableIngredientSerializer implements JsonDeserializer<GunSm
             if (!jsonObject.has("item")) {
                 throw new JsonSyntaxException("Expected " + jsonObject + " must has a item member");
             }
-            Ingredient ingredient = Ingredient.ALLOW_EMPTY_CODEC.parse(new Dynamic<>(JsonOps.INSTANCE,
+            Ingredient ingredient = Ingredient.DISALLOW_EMPTY_CODEC.parse(new Dynamic<>(JsonOps.INSTANCE,
                     jsonObject.get("item"))).getOrThrow();
             int count = 1;
             if (jsonObject.has("count")) {

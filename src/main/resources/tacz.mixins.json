@@ -5,6 +5,7 @@
   "plugin": "com.tacz.guns.GunMonMixinPlugin",
   "mixins": [
     "client.network.ClientLoginNetworkHandlerAccessor",
+    "common.DyeColorMixin",
     "common.EntityMixin",
     "common.EntityTypeMixin",
     "common.ItemStackMixin",

@@ -142,6 +142,12 @@ dependencies {
 	include implementation('com.github.286799714.luaj:luaj-core:3.0.3')
 }
 
+fabricApi {
+	configureDataGeneration() {
+		client = true
+	}
+}
+
 processResources {
 	inputs.property "version", project.version
 

@@ -476,7 +476,7 @@ public class GunSmithTableScreen extends HandledScreen<GunSmithTableMenu> {
                     hasCount = playerIngredientCount.get(index);
                 }
                 int color = count <= hasCount ? 0xFFFFFF : 0xFF0000;
-                gui.drawText(textRenderer, String.format("%d/%d", count, hasCount), (offsetX + 17) * 2, (offsetY + 10) * 2, color, false);
+                gui.drawText(textRenderer, String.format("%d/%d", hasCount, count), (offsetX + 17) * 2, (offsetY + 10) * 2, color, false);
 
                 poseStack.pop();
 

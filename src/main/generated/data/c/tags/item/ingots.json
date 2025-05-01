@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#c:brick_ingots",
+    "#c:copper_ingots",
+    "#c:gold_ingots",
+    "#c:ingots/iron",
+    "#c:ingots/netherite",
+    "#c:nether_brick_ingots"
+  ]
+}

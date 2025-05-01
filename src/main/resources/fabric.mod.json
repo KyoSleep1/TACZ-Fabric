@@ -15,6 +15,9 @@
 	"icon": "assets/tacz/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"fabric-datagen": [
+			"com.tacz.guns.GunModDataGen"
+		],
 		"main": [
 			"com.tacz.guns.GunMod"
 		],
