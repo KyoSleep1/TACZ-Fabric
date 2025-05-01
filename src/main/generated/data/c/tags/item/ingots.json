@@ -3,8 +3,8 @@
     "#c:brick_ingots",
     "#c:copper_ingots",
     "#c:gold_ingots",
-    "#c:ingots/iron",
-    "#c:ingots/netherite",
+    "#c:iron_ingots",
+    "#c:netherite_ingots",
     "#c:nether_brick_ingots"
   ]
 }

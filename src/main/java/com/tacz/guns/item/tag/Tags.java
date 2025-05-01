@@ -279,8 +279,8 @@ public class Tags {
 		public static final TagKey<Item> INGOTS_BRICK = tag("brick_ingots");
 		public static final TagKey<Item> INGOTS_COPPER = tag("copper_ingots");
 		public static final TagKey<Item> INGOTS_GOLD = tag("gold_ingots");
-		public static final TagKey<Item> INGOTS_IRON = ConventionalItemTags.IRON_INGOTS;
-		public static final TagKey<Item> INGOTS_NETHERITE = ConventionalItemTags.NETHERITE_INGOTS;
+		public static final TagKey<Item> INGOTS_IRON = net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags.IRON_INGOTS;
+		public static final TagKey<Item> INGOTS_NETHERITE = net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags.NETHERITE_INGOTS;
 		public static final TagKey<Item> INGOTS_NETHER_BRICK = tag("nether_brick_ingots");
 		public static final TagKey<Item> LEATHER = tag("leather");
 		public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
