@@ -1,5 +1,6 @@
 package com.tacz.guns.entity;
 
+import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.LogicalSide;
 import com.tacz.guns.api.entity.ITargetEntity;
 import com.tacz.guns.api.entity.KnockBackModifier;
@@ -10,7 +11,6 @@ import com.tacz.guns.client.particle.AmmoParticleSpawner;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.config.util.HeadShotAABBConfigRead;
-import com.tacz.guns.entity.sync.model.EntityKineticData;
 import com.tacz.guns.init.ModDamageTypes;
 import com.tacz.guns.network.NetworkClientHandler;
 import com.tacz.guns.network.packets.s2c.event.GunHurtS2CPacket;
@@ -37,12 +37,9 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
-import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -52,7 +49,6 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -74,9 +70,6 @@ public class EntityKineticBullet extends ProjectileEntity {
 
     public static final TrackedData<String> ammoId = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.STRING);
     public static final TrackedData<String> gunId = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.STRING);
-    public static final TrackedData<Float> pitch = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.FLOAT);
-    public static final TrackedData<Float> yaw = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.FLOAT);
-    public static final TrackedData<Vector3f> velocity = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.VECTOR3F);
     public static final TrackedData<Float> gravity = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Boolean> hasExplosion = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> hasIgnite = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -88,7 +81,6 @@ public class EntityKineticBullet extends ProjectileEntity {
     public static final TrackedData<Integer> pierce = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.INTEGER);
     public static final TrackedData<Boolean> isTracerAmmo = DataTracker.registerData(EntityKineticBullet.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private EntityKineticData kineticData;
     private Identifier tempAmmoId;
     private Identifier tempGunId;
 
@@ -112,25 +104,13 @@ public class EntityKineticBullet extends ProjectileEntity {
         this.setPosition(x, y, z);
     }
 
-    public EntityKineticBullet(World worldIn, LivingEntity throwerIn, Identifier ammoId, Identifier gunId, boolean isTracerAmmo, BulletData data) {
+    public EntityKineticBullet(World worldIn, LivingEntity throwerIn, Identifier gunId, Identifier ammoId,
+                               BulletData data, boolean isTracerAmmo) {
         this(TYPE, throwerIn.getX(), throwerIn.getEyeY() - (double) 0.1F, throwerIn.getZ(), worldIn);
         this.setOwner(throwerIn);
 
-        this.kineticData = new EntityKineticData(gunId);
-        kineticData.ammoId = ammoId;
-        kineticData.life = MathHelper.clamp((int) (data.getLifeSecond() * 20), 1, Integer.MAX_VALUE);
-        kineticData.speed = MathHelper.clamp(data.getSpeed() / 20, 0, 30);
-        kineticData.gravity = MathHelper.clamp(data.getGravity(), 0, Float.MAX_VALUE);
-        kineticData.friction = MathHelper.clamp(data.getFriction(), 0, Float.MAX_VALUE);
-        kineticData.hasIgnite = data.isHasIgnite();
-        kineticData.pierce = MathHelper.clamp(data.getPierce(), 1, Integer.MAX_VALUE);
-        kineticData.isTracerAmmo = isTracerAmmo;
-
         final ExplosionData explosionData = data.getExplosionData();
         if (explosionData != null) {
-            kineticData.hasExplosion = true;
-            kineticData.explosionDamage = (float) MathHelper.clamp(explosionData.getDamage() * SyncConfig.DAMAGE_BASE_MULTIPLIER.get(), 0, Float.MAX_VALUE);
-            kineticData.explosionRadius = MathHelper.clamp(explosionData.getRadius(), 0, Float.MAX_VALUE);
             this.explosionKnockback = explosionData.isKnockback();
             int delayTickCount = explosionData.getDelay() * 20;
             if (delayTickCount < 0) {
@@ -154,22 +134,54 @@ public class EntityKineticBullet extends ProjectileEntity {
         this.knockback = MathHelper.clamp(data.getKnockback(), 0, Float.MAX_VALUE);
         this.extraDamage = data.getExtraDamage();
         this.startPos = this.getPos();
+
+        this.initKineticData(data, gunId, ammoId, isTracerAmmo);
     }
+
+    private void initKineticData(BulletData data, Identifier gunId, Identifier ammoId,
+                                 boolean isTracerAmmo) {
+        this.dataTracker.set(EntityKineticBullet.gunId, gunId.toString());
+        this.dataTracker.set(EntityKineticBullet.ammoId, ammoId.toString());
+        this.dataTracker.set(EntityKineticBullet.life,
+                MathHelper.clamp((int) (data.getLifeSecond() * 20), 1, Integer.MAX_VALUE));
+        this.dataTracker.set(EntityKineticBullet.speed,
+                MathHelper.clamp(data.getSpeed() / 20, 0, 30));
+        this.dataTracker.set(EntityKineticBullet.gravity,
+                MathHelper.clamp(data.getGravity(), 0, Float.MAX_VALUE));
+        this.dataTracker.set(EntityKineticBullet.friction,
+                MathHelper.clamp(data.getFriction(), 0, Float.MAX_VALUE));
+        this.dataTracker.set(EntityKineticBullet.hasIgnite, data.isHasIgnite());
+        this.dataTracker.set(EntityKineticBullet.pierce,
+                MathHelper.clamp(data.getPierce(), 1, Integer.MAX_VALUE));
+        this.dataTracker.set(EntityKineticBullet.isTracerAmmo, isTracerAmmo);
+
+        final ExplosionData explosionData = data.getExplosionData();
+        if (explosionData != null) {
+            this.dataTracker.set(EntityKineticBullet.hasExplosion, true);
+            this.dataTracker.set(EntityKineticBullet.explosionDamage,
+                    (float) MathHelper.clamp(
+                            explosionData.getDamage() * SyncConfig.DAMAGE_BASE_MULTIPLIER.get(), 0,
+                            Float.MAX_VALUE));
+            this.dataTracker.set(EntityKineticBullet.explosionRadius,
+                    MathHelper.clamp(explosionData.getRadius(), 0, Float.MAX_VALUE));
+        }
+    }
+
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
-        builder.add(ammoId, this.kineticData.ammoId.toString());
-        builder.add(gunId, this.kineticData.gunId.toString());
-        builder.add(gravity, this.kineticData.gravity);
-        builder.add(hasExplosion, this.kineticData.hasExplosion);
-        builder.add(hasIgnite, this.kineticData.hasIgnite);
-        builder.add(explosionRadius, this.kineticData.explosionRadius);
-        builder.add(explosionDamage, this.kineticData.explosionDamage);
-        builder.add(life, this.kineticData.life);
-        builder.add(speed, this.kineticData.speed);
-        builder.add(friction, this.kineticData.friction);
-        builder.add(pierce, this.kineticData.pierce);
-        builder.add(isTracerAmmo, this.kineticData.isTracerAmmo);
+        builder.add(ammoId, DefaultAssets.EMPTY_AMMO_ID.toString());
+        builder.add(gunId, DefaultAssets.EMPTY_GUN_ID.toString());
+        builder.add(gravity, 0.0F);
+        builder.add(hasExplosion, false);
+        builder.add(hasIgnite, false);
+        builder.add(explosionRadius, 3.0F);
+        builder.add(explosionDamage, 3.0F);
+        builder.add(life, 200);
+        builder.add(speed, 1.0F);
+        builder.add(friction, 0.01F);
+        builder.add(pierce, 1);
+        builder.add(isTracerAmmo, false);
     }
 
     public static void createExplosion(Entity owner, Entity exploder, float damage, float radius, boolean knockback, Vec3d hitPos) {

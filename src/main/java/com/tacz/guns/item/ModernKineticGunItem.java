@@ -25,9 +25,7 @@ import com.tacz.guns.sound.SoundManager;
 import com.tacz.guns.util.AttachmentDataUtils;
 import com.tacz.guns.util.CycleTaskHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -39,15 +37,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
  * 现代枪的逻辑实现
  */
 public class ModernKineticGunItem extends AbstractGunItem implements GunItemDataAccessor {
+
     public static final String TYPE_NAME = "modern_kinetic";
 
     public ModernKineticGunItem() {
@@ -263,7 +260,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
      * 生成子弹实体
      */
     protected void doSpawnBulletEntity(World world, LivingEntity shooter, float pitch, float yaw, float speed, float inaccuracy, Identifier ammoId, Identifier gunId, boolean tracer, BulletData bulletData) {
-        EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, ammoId, gunId, tracer, bulletData);
+        final EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, gunId, ammoId, bulletData, tracer);
         bullet.setVelocity(bullet, pitch, yaw, 0.0F, speed, inaccuracy);
         world.spawnEntity(bullet);
     }
