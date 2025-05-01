@@ -22,10 +22,6 @@ public interface AttachmentItemDataAccessor extends IAttachment {
     @Override
     @NotNull
     default Identifier getAttachmentId(ItemStack attachment) {
-        final AttachmentType type = attachment.getOrDefault(ModItemComponents.ATTACHMENT_TYPE, AttachmentType.NONE);
-        if (type == AttachmentType.NONE) {
-            return DefaultAssets.EMPTY_ATTACHMENT_ID;
-        }
         return attachment.getOrDefault(ModItemComponents.ATTACHMENT_ID, DefaultAssets.EMPTY_ATTACHMENT_ID);
     }
 
