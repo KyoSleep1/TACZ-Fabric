@@ -7,8 +7,9 @@ import com.tacz.guns.config.ServerConfig;
 import com.tacz.guns.init.*;
 import com.tacz.guns.resource.DedicatedServerReloadManager;
 import com.tacz.guns.util.EnvironmentUtil;
-import fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.neoforged.fml.config.ModConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,15 +22,14 @@ public class GunMod implements ModInitializer {
 	 */
 	public static final String DEFAULT_GUN_PACK_NAME = "tacz_default_gun";
 
-	@SuppressWarnings("all")
 	@Override
 	public void onInitialize() {
-		ForgeConfigRegistry.INSTANCE.register(MOD_ID,
-				net.minecraftforge.fml.config.ModConfig.Type.COMMON, CommonConfig.init());
-		ForgeConfigRegistry.INSTANCE.register(MOD_ID,
-				net.minecraftforge.fml.config.ModConfig.Type.SERVER, ServerConfig.init());
-		ForgeConfigRegistry.INSTANCE.register(MOD_ID,
-				net.minecraftforge.fml.config.ModConfig.Type.CLIENT, ClientConfig.init());
+		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID,
+				ModConfig.Type.COMMON, CommonConfig.init());
+		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID,
+				ModConfig.Type.SERVER, ServerConfig.init());
+		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID,
+				ModConfig.Type.CLIENT, ClientConfig.init());
 
 		ModEvents.init();
 		ModBlocks.init();

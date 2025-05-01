@@ -5,6 +5,7 @@ import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
 import com.tacz.guns.event.*;
 import com.tacz.guns.event.ammo.BellRing;
 import com.tacz.guns.event.ammo.DestroyGlassBlock;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -12,7 +13,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 public class ModEvents {
 
-    @SuppressWarnings("all")
     public static void init() {
         ServerPlayConnectionEvents.JOIN.register(EnterServerEvent::onLoggedInServer);
 
@@ -21,10 +21,8 @@ public class ModEvents {
 
         LivingEntityEvents.KNOCKBACK_STRENGTH.register(KnockbackChange::onKnockback);
 
-        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents.loading(GunMod.MOD_ID)
-                .register(LoadingConfigEvent::onModConfigLoading);
-        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents.reloading(GunMod.MOD_ID)
-                .register(LoadingConfigEvent::onModConfigReloading);
+        NeoForgeModConfigEvents.loading(GunMod.MOD_ID).register(LoadingConfigEvent::onModConfigLoading);
+        NeoForgeModConfigEvents.reloading(GunMod.MOD_ID).register(LoadingConfigEvent::onModConfigReloading);
 
         ServerPlayerEvents.AFTER_RESPAWN.register(PlayerRespawnEvent::afterRespawn);
 
