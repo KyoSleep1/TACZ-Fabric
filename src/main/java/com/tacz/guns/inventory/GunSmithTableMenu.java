@@ -73,9 +73,7 @@ public class GunSmithTableMenu extends ScreenHandler {
             // Give the player the corresponding item
             World world = player.getWorld();
             if (!world.isClient) {
-                ItemEntity entity = new ItemEntity(world, player.getX(), player.getY() + 0.5, player.getZ(), recipe.getResult(world.getRegistryManager()).copy());
-                entity.setPickupDelay(0);
-                world.spawnEntity(entity);
+                player.giveItemStack(recipe.getResult(world.getRegistryManager()));
             }
             // Update, otherwise the client display is incorrect
             player.playerScreenHandler.updateToClient();

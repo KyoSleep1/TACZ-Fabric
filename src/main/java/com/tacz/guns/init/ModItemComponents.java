@@ -32,14 +32,13 @@ public class ModItemComponents {
     private static final String ATTACHMENT_SKIN_ID_TAG = "attachment_skin";
     private static final String ATTACHMENT_ZOOM_NUMBER_TAG = "attachment_zoom_number";
 
-    private static final String AMMO_BOX_ID_TAG = "ammo_id";
-    private static final String AMMO_BOX_COUNT_TAG = "ammo_count";
-    private static final String AMMO_BOX_CREATIVE_TAG = "creative";
-    private static final String AMMO_BOX_ALL_TYPE_CREATIVE_TAG = "all_type_creative";
-    private static final String AMMO_BOX_LEVEL_TAG = "level";
+    private static final String AMMO_BOX_ID_TAG = "ammo_box_id";
+    private static final String AMMO_BOX_COUNT_TAG = "ammo_box_count";
+    private static final String AMMO_BOX_CREATIVE_TAG = "ammo_box_creative";
+    private static final String AMMO_BOX_ALL_TYPE_CREATIVE_TAG = "ammo_box_all_type_creative";
+    private static final String AMMO_BOX_LEVEL_TAG = "ammo_box_level";
 
     private static final String AMMO_ID_TAG = "ammo_id";
-
 
     public static final ComponentType<Identifier> GUN_ID = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
