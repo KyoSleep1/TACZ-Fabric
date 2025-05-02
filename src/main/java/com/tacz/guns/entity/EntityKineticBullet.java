@@ -203,8 +203,8 @@ public class EntityKineticBullet extends ProjectileEntity {
         }
         // 创建爆炸
         final boolean isFire = AmmoConfig.EXPLOSIVE_AMMO_FIRE.get();
-        ProjectileExplosion explosion = new ProjectileExplosion(level, owner, exploder, null,
-                null, hitPos.getX(), hitPos.getY(), hitPos.getZ(), damage, radius, knockback, isFire,
+        final ProjectileExplosion explosion = new ProjectileExplosion(level, owner, exploder, null,
+                hitPos.getX(), hitPos.getY(), hitPos.getZ(), damage, radius, knockback, isFire,
                 mode);
         // 执行爆炸逻辑
         explosion.collectBlocksAndDamageEntities();

@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -41,7 +42,7 @@ public class ProjectileExplosion extends Explosion {
     private final ExplosionBehavior damageCalculator;
     private final DamageSource source;
 
-    public ProjectileExplosion(World world, @Nullable Entity owner, Entity exploder, @Nullable DamageSource source,
+    public ProjectileExplosion(World world, @Nullable Entity owner, Entity exploder,
                                ExplosionBehavior damageCalculator, double x, double y, double z, float power,
                                float radius, boolean knockback, boolean createFire, DestructionType destructionType) {
         super(world, owner, x, y, z, power, createFire, destructionType);
@@ -54,7 +55,7 @@ public class ProjectileExplosion extends Explosion {
         this.exploder = exploder;
         this.damageCalculator = damageCalculator == null ? DEFAULT_CONTEXT : damageCalculator;
         this.knockback = knockback;
-        this.source = source;
+        this.source = Explosion.createDamageSource(world, exploder);
     }
 
     @Override
