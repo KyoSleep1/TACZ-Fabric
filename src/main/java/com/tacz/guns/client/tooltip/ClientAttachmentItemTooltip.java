@@ -57,7 +57,8 @@ public class ClientAttachmentItemTooltip implements TooltipComponent {
     }
 
     private static List<ItemStack> getAllAllowGuns(List<ItemStack> output, Identifier attachmentId) {
-        ItemStack attachment = AttachmentItemBuilder.create().setId(attachmentId).build();
+        // NONE on purpose because this code does not actually checks for the type of attachment
+        ItemStack attachment = AttachmentItemBuilder.create().setId(attachmentId).build(AttachmentType.NONE);
         TimelessAPI.getAllCommonGunIndex().forEach(entry -> {
             Identifier gunId = entry.getKey();
             ItemStack gun = GunItemBuilder.create().setId(gunId).build();

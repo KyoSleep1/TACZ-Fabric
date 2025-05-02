@@ -12,6 +12,7 @@ import com.tacz.guns.network.packets.c2s.RefitGunC2SPacket;
 import com.tacz.guns.network.packets.c2s.UnloadAttachmentC2SPacket;
 import com.tacz.guns.sound.SoundManager;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -83,7 +84,9 @@ public class GunRefitScreen extends Screen {
 
     @Override
     public void render(@NotNull DrawContext graphics, int mouseX, int mouseY, float pPartialTick) {
-        super.render(graphics, mouseX, mouseY, pPartialTick);
+        for (Drawable drawable : this.drawables) {
+            drawable.render(graphics, mouseX, mouseY, pPartialTick);
+        }
 
         GunPropertyDiagrams.draw(graphics, textRenderer, 11, 11);
 
@@ -113,7 +116,7 @@ public class GunRefitScreen extends Screen {
             ItemStack inventoryItem = inventory.getStack(i);
             IAttachment attachment = IAttachment.getIAttachmentOrNull(inventoryItem);
             IGun iGun = IGun.getIGunOrNull(player.getMainHandStack());
-            if (attachment != null && iGun != null && attachment.getType(inventoryItem) == RefitTransform.getCurrentTransformType()) {
+            if (attachment != null && iGun != null && attachment.getAttachmentType(inventoryItem) == RefitTransform.getCurrentTransformType()) {
                 if (!iGun.allowAttachment(player.getMainHandStack(), inventoryItem)) {
                     continue;
                 }

@@ -2,11 +2,13 @@ package com.tacz.guns.api.item.builder;
 
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.item.IAttachment;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.init.ModItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class AttachmentItemBuilder {
+
     private int count = 1;
     private Identifier attachmentId = DefaultAssets.DEFAULT_ATTACHMENT_ID;
     private Identifier skinId = null;
@@ -33,11 +35,12 @@ public class AttachmentItemBuilder {
         return this;
     }
 
-    public ItemStack build() {
+    public ItemStack build(AttachmentType type) {
         ItemStack attachment = new ItemStack(ModItems.ATTACHMENT, this.count);
         if (attachment.getItem() instanceof IAttachment iAttachment) {
             iAttachment.setAttachmentId(attachment, this.attachmentId);
             iAttachment.setSkinId(attachment, this.skinId);
+            iAttachment.setAttachmentType(attachment, type);
         }
         return attachment;
     }

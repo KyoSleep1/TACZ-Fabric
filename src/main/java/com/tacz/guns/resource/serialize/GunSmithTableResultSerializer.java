@@ -2,6 +2,7 @@ package com.tacz.guns.resource.serialize;
 
 import com.google.gson.*;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
@@ -67,7 +68,8 @@ public class GunSmithTableResultSerializer implements JsonDeserializer<GunSmithT
 
     private GunSmithTableResult getAttachmentStack(Identifier id, int count) {
         return TimelessAPI.getCommonAttachmentIndex(id).map(attachmentIndex -> {
-            ItemStack itemStack = AttachmentItemBuilder.create().setCount(count).setId(id).build();
+            final AttachmentType type = attachmentIndex.getType();
+            ItemStack itemStack = AttachmentItemBuilder.create().setCount(count).setId(id).build(type);
             String group = attachmentIndex.getType().name().toLowerCase(Locale.US);
             return new GunSmithTableResult(itemStack, group);
         }).orElse(new GunSmithTableResult(ItemStack.EMPTY, StringUtils.EMPTY));

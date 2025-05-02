@@ -54,8 +54,13 @@ public interface IAttachment {
     void internalSetZoomNumber(ItemStack attachmentStack, int zoomNumber);
 
     /**
+     * 设置配件类型
+     */
+    void setAttachmentType(ItemStack attachmentStack, AttachmentType attachmentType);
+
+    /**
      * 配件类型
      */
     @NotNull
-    AttachmentType getType(ItemStack attachmentStack);
+    AttachmentType getAttachmentType(ItemStack attachmentStack);
 }

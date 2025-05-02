@@ -31,6 +31,16 @@ public interface AttachmentItemDataAccessor extends IAttachment {
     }
 
     @Override
+    default void setAttachmentType(ItemStack attachmentStack, AttachmentType attachmentType) {
+        attachmentStack.set(ModItemComponents.ATTACHMENT_TYPE, attachmentType);
+    }
+
+    @Override
+    default @NotNull AttachmentType getAttachmentType(ItemStack attachmentStack) {
+        return attachmentStack.getOrDefault(ModItemComponents.ATTACHMENT_TYPE, AttachmentType.NONE);
+    }
+
+    @Override
     @Nullable
     default Identifier getSkinId(ItemStack attachment) {
         return attachment.getOrDefault(ModItemComponents.ATTACHMENT_SKIN_ID, null);

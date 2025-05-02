@@ -77,7 +77,9 @@ public final class GunItemBuilder {
             iGun.setCurrentAmmoCount(gun, this.ammoCount);
             iGun.setBulletInBarrel(gun, this.bulletInBarrel);
             this.attachments.forEach((type, id) -> {
-                ItemStack attachmentStack = AttachmentItemBuilder.create().setId(id).build();
+                ItemStack attachmentStack = AttachmentItemBuilder.create()
+                        .setId(id)
+                        .build(type);
                 iGun.installAttachment(gun, attachmentStack);
             });
         }
