@@ -260,7 +260,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
      * 生成子弹实体
      */
     protected void doSpawnBulletEntity(World world, LivingEntity shooter, float pitch, float yaw, float speed, float inaccuracy, Identifier ammoId, Identifier gunId, boolean tracer, BulletData bulletData) {
-        final EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, gunId, ammoId, bulletData, tracer);
+        final EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, ammoId, gunId, tracer, bulletData);
         bullet.setVelocity(bullet, pitch, yaw, 0.0F, speed, inaccuracy);
         world.spawnEntity(bullet);
     }

@@ -4,6 +4,7 @@ import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
+import com.tacz.guns.entity.sync.Vec3DSync;
 import com.tacz.guns.init.*;
 import com.tacz.guns.item.tag.Tags;
 import com.tacz.guns.resource.DedicatedServerReloadManager;
@@ -25,6 +26,8 @@ public class GunMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		Vec3DSync.init();
+
 		Tags.Blocks.init();
 		Tags.Items.init();
 
