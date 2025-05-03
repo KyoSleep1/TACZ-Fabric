@@ -14,7 +14,6 @@ import com.tacz.guns.item.AmmoBoxItem;
 import com.tacz.guns.mixin.client.MinecraftClientAccessor;
 import committee.nova.mkb.api.IKeyBinding;
 import committee.nova.mkb.keybinding.KeyConflictContext;
-import committee.nova.mkb.keybinding.KeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
@@ -35,16 +34,7 @@ public class ClientSetup {
                 RefitKey.REFIT_KEY,
                 ZoomKey.ZOOM_KEY,
                 MeleeKey.MELEE_KEY,
-                ConfigKey.OPEN_CONFIG_KEY
         };
-
-        var configKey = ((IKeyBinding)ConfigKey.OPEN_CONFIG_KEY);
-        try {
-            var field = configKey.getClass().getDeclaredField("keyModifierDefault");
-            field.setAccessible(true);
-            field.set(configKey, KeyModifier.ALT);
-            field.setAccessible(false);
-        } catch (Exception ignored) {}
 
         for (KeyBinding key : keys) {
             IKeyBinding ikb = (IKeyBinding) key;
@@ -75,7 +65,7 @@ public class ClientSetup {
 
         // 注册颜色
         MinecraftClient.getInstance().execute(() ->
-                ((MinecraftClientAccessor)MinecraftClient.getInstance()).getItemColors().register(AmmoBoxItem::getColor, ModItems.AMMO_BOX));
+                ((MinecraftClientAccessor) MinecraftClient.getInstance()).getItemColors().register(AmmoBoxItem::getColor, ModItems.AMMO_BOX));
 
         // 注册变种
         ModelPredicateProviderRegistry.register(ModItems.AMMO_BOX, AmmoBoxItem.PROPERTY_NAME, AmmoBoxItem::getStatue);

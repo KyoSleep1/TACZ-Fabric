@@ -54,7 +54,6 @@ public class ModEvents {
         ClientTickEvents.START_CLIENT_TICK.register(AimKey::cancelAim);
         ClientTickEvents.START_CLIENT_TICK.register(ShootKey::autoShoot);
 
-        InputEvent.Key.EVENT.register(ConfigKey::onOpenConfig);
         InputEvent.Key.EVENT.register(FireSelectKey::onFireSelectKeyPress);
         InputEvent.Key.EVENT.register(InspectKey::onInspectPress);
         InputEvent.Key.EVENT.register(InteractKey::onInteractKeyPress);
