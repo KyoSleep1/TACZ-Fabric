@@ -1,7 +1,9 @@
 package com.tacz.guns.api.entity;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.function.Supplier;
 
@@ -65,32 +67,32 @@ public interface IGunOperator {
     /**
      * Server-side Gun Cutting Logic
      */
-    void draw(Supplier<ItemStack> itemStackSupplier);
+    void draw(ItemStack gun);
 
     /**
      * Server-side bolt pulling logic
      */
-    void bolt();
+    void bolt(ItemStack gun);
 
     /**
      * Server-side bullet change logic
      */
-    void reload();
+    void reload(ItemStack gun);
 
     /**
      * Logic for switching firing modes on the server side
      */
-    void fireSelect();
+    void fireSelect(ItemStack gun);
 
     /**
      * Server-side logic for adjusting the multiplier
      */
-    void zoom();
+    void zoom(PlayerEntity player, ItemStack gun);
 
     /**
      * The logic of server-side melee combat (bayonets)
      */
-    void melee();
+    void melee(ItemStack gun);
 
     /**
      * From the position of the entity, fire in the specified direction
@@ -99,7 +101,7 @@ public interface IGunOperator {
      * @param yaw   Yaw angle in the direction of fire (i.e. yRot )
      * @return Results of this shooting
      */
-    ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw);
+    ShootResult shoot(ItemStack gun, Supplier<Float> pitch, Supplier<Float> yaw);
 
     /**
      * server-side, whether this operator is affected by the number of munitions

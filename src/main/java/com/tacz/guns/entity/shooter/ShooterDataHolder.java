@@ -1,11 +1,7 @@
 package com.tacz.guns.entity.shooter;
 
 import com.tacz.guns.api.entity.ReloadState;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 public class ShooterDataHolder {
     /**
@@ -59,11 +55,6 @@ public class ShooterDataHolder {
      */
     @NotNull
     public ReloadState.StateType reloadStateType = ReloadState.StateType.NOT_RELOADING;
-    /**
-     * 当前操作的枪械物品的 Supplier。在切枪时 (draw 方法) 更新。
-     */
-    @Nullable
-    public Supplier<ItemStack> currentGunItem = null;
     /**
      * 缓存当前枪械的收枪时间，以确保下一次切枪的时候使用此时间计算收枪。
      * 此数值不会因 tacz$CurrentGunItem 提供的 ItemStack 改变而改变，因此应当在恰当的时机调用 updatePutAwayTime() 进行更新。

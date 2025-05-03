@@ -4,6 +4,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.KnockBackModifier;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.entity.ShootResult;
+import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.entity.shooter.*;
 import com.tacz.guns.entity.sync.ModSyncedEntityData;
 import com.tacz.guns.event.LivingEntityEvents;
@@ -24,7 +25,9 @@ import java.util.function.Supplier;
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
-    @Shadow @Nullable protected PlayerEntity attackingPlayer;
+    @Shadow
+    @Nullable
+    protected PlayerEntity attackingPlayer;
     private final @Unique LivingEntity tacz$shooter = (LivingEntity) (Object) this;
     private final @Unique ShooterDataHolder tacz$data = new ShooterDataHolder();
     private final @Unique LivingEntityDrawGun tacz$draw = new LivingEntityDrawGun(tacz$shooter, tacz$data);
@@ -91,31 +94,31 @@ public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
 
     @Unique
     @Override
-    public void draw(Supplier<ItemStack> gunItemSupplier) {
-        this.tacz$draw.draw(gunItemSupplier);
+    public void draw(ItemStack gun) {
+        this.tacz$draw.draw(gun);
     }
 
     @Unique
     @Override
-    public void bolt() {
-        this.tacz$bolt.bolt();
+    public void bolt(ItemStack gun) {
+        this.tacz$bolt.bolt(gun);
     }
 
     @Unique
     @Override
-    public void reload() {
-        this.tacz$reload.reload();
+    public void reload(ItemStack gun) {
+        this.tacz$reload.reload(gun);
     }
 
     @Override
-    public void melee() {
-        this.tacz$melee.melee();
+    public void melee(ItemStack gun) {
+        this.tacz$melee.melee(gun);
     }
 
     @Unique
     @Override
-    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        return this.tacz$shoot.shoot(pitch, yaw);
+    public ShootResult shoot(ItemStack gun, Supplier<Float> pitch, Supplier<Float> yaw) {
+        return this.tacz$shoot.shoot(gun, pitch, yaw);
     }
 
     @Unique
@@ -138,14 +141,14 @@ public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
 
     @Unique
     @Override
-    public void fireSelect() {
-        this.tacz$fireSelect.fireSelect();
+    public void fireSelect(ItemStack gun) {
+        this.tacz$fireSelect.fireSelect(gun);
     }
 
     @Unique
     @Override
-    public void zoom() {
-        this.tacz$aim.zoom();
+    public void zoom(PlayerEntity player, ItemStack gun) {
+        this.tacz$aim.zoom(player, gun);
     }
 
     @Inject(method = "tick", at = @At("RETURN"))
@@ -153,17 +156,20 @@ public class LivingEntityMixin implements IGunOperator, KnockBackModifier {
         // 仅在服务端调用
         if (!This().getWorld().isClient()) {
             // 完成各种 tick 任务
-            ReloadState reloadState = this.tacz$reload.tickReloadState();
-            this.tacz$aim.tickAimingProgress();
-            this.tacz$aim.tickSprint();
-            this.tacz$bolt.tickBolt();
-            this.tacz$melee.scheduleTickMelee();
-            // 从服务端同步数据
-            ModSyncedEntityData.SHOOT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$shoot.getShootCoolDown());
-            ModSyncedEntityData.MELEE_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$melee.getMeleeCoolDown());
-            ModSyncedEntityData.DRAW_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$draw.getDrawCoolDown());
+            final LivingEntity entity = This();
+            final ItemStack gun = entity.getMainHandStack();
+            if (gun != null && gun.getItem() instanceof IGun) {
+                final ReloadState reloadState = this.tacz$reload.tickReloadState(gun);
+                this.tacz$aim.tickAimingProgress(gun);
+                this.tacz$aim.tickSprint(gun);
+                this.tacz$bolt.tickBolt(gun);
+                this.tacz$melee.scheduleTickMelee(gun);
+                ModSyncedEntityData.RELOAD_STATE_KEY.setValue(tacz$shooter, reloadState);
+            }
+            ModSyncedEntityData.SHOOT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$shoot.getShootCoolDown(gun));
+            ModSyncedEntityData.MELEE_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$melee.getMeleeCoolDown(gun));
+            ModSyncedEntityData.DRAW_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$draw.getDrawCoolDown(gun));
             ModSyncedEntityData.BOLT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$data.boltCoolDown);
-            ModSyncedEntityData.RELOAD_STATE_KEY.setValue(tacz$shooter, reloadState);
             ModSyncedEntityData.AIMING_PROGRESS_KEY.setValue(tacz$shooter, this.tacz$data.aimingProgress);
             ModSyncedEntityData.IS_AIMING_KEY.setValue(tacz$shooter, this.tacz$data.isAiming);
             ModSyncedEntityData.SPRINT_TIME_KEY.setValue(tacz$shooter, this.tacz$data.sprintTimeS);

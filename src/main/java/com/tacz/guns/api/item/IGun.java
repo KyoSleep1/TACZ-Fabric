@@ -9,8 +9,6 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 /**
  * No gun logic is included here, only the various nbt accesses for guns. <br>
  * You can see the gun logic at {@link AbstractGunItem}
@@ -212,7 +210,7 @@ public interface IGun {
     /**
      * Unloading accessories
      */
-    void unloadAttachment(@NotNull ItemStack gun, AttachmentType type);
+    void unloadAttachment(@NotNull ItemStack gun, ItemStack attachment, AttachmentType type);
 
     /**
      * Whether the firearm is allowed to be fitted with this accessory

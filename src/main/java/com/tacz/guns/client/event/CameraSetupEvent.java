@@ -53,7 +53,7 @@ public class CameraSetupEvent {
         if (player == null) {
             return;
         }
-        ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
+        ItemStack stack = player.getMainHandStack();
         if (!(stack.getItem() instanceof IGun iGun)) {
             return;
         }
@@ -90,7 +90,7 @@ public class CameraSetupEvent {
         if (player == null) {
             return;
         }
-        ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
+        ItemStack stack = player.getMainHandStack();
         if (!(stack.getItem() instanceof IGun iGun)) {
             return;
         }
@@ -115,7 +115,7 @@ public class CameraSetupEvent {
         }
         Entity entity = event.getCamera().getFocusedEntity();
         if (entity instanceof LivingEntity livingEntity) {
-            ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
+            ItemStack stack = livingEntity.getMainHandStack();
             if (!(stack.getItem() instanceof IGun iGun)) {
                 float fov = WORLD_FOV_DYNAMICS.update((float) event.getFOV());
                 event.setFOV(fov);
@@ -142,7 +142,7 @@ public class CameraSetupEvent {
         }
         Entity entity = event.getCamera().getFocusedEntity();
         if (entity instanceof LivingEntity livingEntity) {
-            ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
+            ItemStack stack = livingEntity.getMainHandStack();
             if (!(stack.getItem() instanceof IGun iGun)) {
                 float fov = ITEM_MODEL_FOV_DYNAMICS.update((float) event.getFOV());
                 event.setFOV(fov);

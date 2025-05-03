@@ -21,6 +21,6 @@ public class PlayerBoltGunC2SPacket implements HandledPacket<ServerPlayerEntity>
     @Override
     public void handle(ServerPlayerEntity player) {
         if (player == null) return;
-        IGunOperator.fromLivingEntity(player).bolt();
+        IGunOperator.fromLivingEntity(player).bolt(player.getMainHandStack());
     }
 }

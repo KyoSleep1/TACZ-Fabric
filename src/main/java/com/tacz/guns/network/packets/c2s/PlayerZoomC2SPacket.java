@@ -21,6 +21,6 @@ public class PlayerZoomC2SPacket implements HandledPacket<ServerPlayerEntity> {
     @Override
     public void handle(ServerPlayerEntity player) {
         if (player == null) return;
-        IGunOperator.fromLivingEntity(player).zoom();
+        IGunOperator.fromLivingEntity(player).zoom(player, player.getMainHandStack());
     }
 }

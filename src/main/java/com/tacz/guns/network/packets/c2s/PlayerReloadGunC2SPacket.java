@@ -20,6 +20,6 @@ public record PlayerReloadGunC2SPacket() implements HandledPacket<ServerPlayerEn
     @Override
     public void handle(ServerPlayerEntity sender) {
         if (sender == null) return;
-        IGunOperator.fromLivingEntity(sender).reload();
+        IGunOperator.fromLivingEntity(sender).reload(sender.getMainHandStack());
     }
 }

@@ -45,7 +45,7 @@ public class UnloadAttachmentC2SPacket implements HandledPacket<ServerPlayerEnti
         if (iGun != null) {
             ItemStack attachmentItem = iGun.getAttachment(gunItem, attachmentType);
             if (!attachmentItem.isEmpty() && inventory.insertStack(attachmentItem)) {
-                iGun.unloadAttachment(gunItem, attachmentType);
+                iGun.unloadAttachment(gunItem, attachmentItem, attachmentType);
                 if (attachmentType == AttachmentType.EXTENDED_MAG) {
                     dropAllAmmo(player, iGun, gunItem);
                 }

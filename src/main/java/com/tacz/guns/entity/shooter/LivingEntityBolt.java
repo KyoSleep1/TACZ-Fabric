@@ -21,18 +21,17 @@ public class LivingEntityBolt {
         this.shoot = shoot;
     }
 
-    public void bolt() {
-        if (data.currentGunItem == null) {
+    public void bolt(ItemStack gun) {
+        if (gun == null) {
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(gunIndex -> {
             // 判断是否正在射击冷却
-            if (shoot.getShootCoolDown() != 0) {
+            if (shoot.getShootCoolDown(gun) != 0) {
                 return;
             }
             // 检查是否正在换弹
@@ -40,7 +39,7 @@ public class LivingEntityBolt {
                 return;
             }
             // 检查是否在切枪
-            if (draw.getDrawCoolDown() != 0) {
+            if (draw.getDrawCoolDown(gun) != 0) {
                 return;
             }
             // 检查是否在拉栓
@@ -53,11 +52,11 @@ public class LivingEntityBolt {
                 return;
             }
             // 检查是否有弹药在枪膛内
-            if (iGun.hasBulletInBarrel(currentGunItem)) {
+            if (iGun.hasBulletInBarrel(gun)) {
                 return;
             }
             // 检查弹匣内是否有子弹
-            if (iGun.getCurrentAmmoCount(currentGunItem) == 0) {
+            if (iGun.getCurrentAmmoCount(gun) == 0) {
                 return;
             }
             data.boltTimestamp = System.currentTimeMillis();
@@ -66,21 +65,20 @@ public class LivingEntityBolt {
         });
     }
 
-    public void tickBolt() {
+    public void tickBolt(ItemStack gun) {
         // bolt cool down 为 -1 时，代表拉栓逻辑进程没有开始，不需要tick
         if (data.boltCoolDown == -1) {
             return;
         }
-        if (data.currentGunItem == null) {
+        if (gun == null) {
             data.boltCoolDown = -1;
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             data.boltCoolDown = -1;
             return;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
         data.boltCoolDown = gunIndex.map(index -> {
             long coolDown = (long) (index.getGunData().getBoltActionTime() * 1000) - (System.currentTimeMillis() - data.boltTimestamp);
@@ -93,7 +91,7 @@ public class LivingEntityBolt {
         }).orElse(-1L);
         if (data.boltCoolDown == 0) {
             if (iGun instanceof AbstractGunItem logicGun) {
-                logicGun.bolt(currentGunItem);
+                logicGun.bolt(gun);
             }
             data.boltCoolDown = -1;
         }

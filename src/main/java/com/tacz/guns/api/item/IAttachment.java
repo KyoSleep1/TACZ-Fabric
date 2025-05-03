@@ -51,7 +51,7 @@ public interface IAttachment {
     /**
      * 设置瞄具配件的缩放倍率的数字索引
      */
-    void internalSetZoomNumber(ItemStack attachmentStack, int zoomNumber);
+    void internalSetZoomNumber(ItemStack gun, ItemStack attachmentStack, int zoomNumber);
 
     /**
      * 设置配件类型

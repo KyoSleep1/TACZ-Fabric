@@ -37,46 +37,45 @@ public class LivingEntityReload {
         this.shoot = shoot;
     }
 
-    public void reload() {
-        if (data.currentGunItem == null) {
+    public void reload(ItemStack gun) {
+        if (gun == null) {
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(gunIndex -> {
             // 检查换弹是否还未完成
             if (data.reloadStateType.isReloading()) {
                 return;
             }
             // 检查是否正在开火冷却
-            if (shoot.getShootCoolDown() != 0) {
+            if (shoot.getShootCoolDown(gun) != 0) {
                 return;
             }
             // 检查是否在切枪
-            if (draw.getDrawCoolDown() != 0) {
+            if (draw.getDrawCoolDown(gun) != 0) {
                 return;
             }
             // 检查是否在拉栓
             if (data.boltCoolDown >= 0) {
                 return;
             }
-            int currentAmmoCount = iGun.getCurrentAmmoCount(currentGunItem);
-            int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunIndex.getGunData());
+            int currentAmmoCount = iGun.getCurrentAmmoCount(gun);
+            int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(gun, gunIndex.getGunData());
             // 检查弹药
-            if (IGunOperator.fromLivingEntity(shooter).needCheckAmmo() && !inventoryHasAmmo(shooter, currentAmmoCount, maxAmmoCount, currentGunItem, iGun)) {
+            if (IGunOperator.fromLivingEntity(shooter).needCheckAmmo() && !inventoryHasAmmo(shooter, currentAmmoCount, maxAmmoCount, gun, iGun)) {
                 return;
             }
             // 触发装弹事件
-            if (new GunReloadEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
+            if (new GunReloadEvent(shooter, gun, LogicalSide.SERVER).post()) {
                 return;
             }
             NetworkClientHandler.GUN_RELOAD.sendToSurroundingPlayers(new GunReloadS2CPacket(shooter.getId(),
-                    currentGunItem), shooter);
+                    gun), shooter);
             Bolt boltType = gunIndex.getGunData().getBolt();
-            int ammoCount = iGun.getCurrentAmmoCount(currentGunItem) + (iGun.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT ? 1 : 0);
+            int ammoCount = iGun.getCurrentAmmoCount(gun) + (iGun.hasBulletInBarrel(gun) && boltType != Bolt.OPEN_BOLT ? 1 : 0);
             if (ammoCount <= 0) {
                 // 初始化空仓换弹的 tick 的状态
                 data.reloadStateType = ReloadState.StateType.EMPTY_RELOAD_FEEDING;
@@ -88,21 +87,20 @@ public class LivingEntityReload {
         });
     }
 
-    public ReloadState tickReloadState() {
+    public ReloadState tickReloadState(ItemStack gun) {
         // 初始化 tick 返回值
         ReloadState reloadState = new ReloadState();
         reloadState.setStateType(ReloadState.StateType.NOT_RELOADING);
         reloadState.setCountDown(ReloadState.NOT_RELOADING_COUNTDOWN);
         // 判断是否正在进行装填流程。如果没有则返回。
-        if (data.reloadTimestamp == -1 || data.currentGunItem == null) {
+        if (data.reloadTimestamp == -1 || gun == null) {
             return reloadState;
         }
-        if (!(data.currentGunItem.get().getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return reloadState;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
         // 获取当前枪械的 ReloadData。如果没有则返回。
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         if (gunIndexOptional.isEmpty()) {
             return reloadState;
@@ -141,18 +139,18 @@ public class LivingEntityReload {
             }
         }
         // 更新枪内弹药
-        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunData);
+        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(gun, gunData);
         if (data.reloadStateType == ReloadState.StateType.EMPTY_RELOAD_FEEDING) {
             if (stateType == ReloadState.StateType.EMPTY_RELOAD_FINISHING) {
-                if (iGun instanceof AbstractGunItem abstractGunItem && data.currentGunItem != null) {
-                    abstractGunItem.reloadAmmo(currentGunItem, getAndExtractNeedAmmoCount(shooter, data.currentGunItem.get(), iGun, maxAmmoCount), true);
+                if (iGun instanceof AbstractGunItem abstractGunItem) {
+                    abstractGunItem.reloadAmmo(gun, getAndExtractNeedAmmoCount(shooter, gun, iGun, maxAmmoCount), true);
                 }
             }
         }
         if (data.reloadStateType == ReloadState.StateType.TACTICAL_RELOAD_FEEDING) {
             if (stateType == ReloadState.StateType.TACTICAL_RELOAD_FINISHING) {
-                if (iGun instanceof AbstractGunItem abstractGunItem && data.currentGunItem != null) {
-                    abstractGunItem.reloadAmmo(currentGunItem, getAndExtractNeedAmmoCount(shooter, data.currentGunItem.get(), iGun, maxAmmoCount), false);
+                if (iGun instanceof AbstractGunItem abstractGunItem) {
+                    abstractGunItem.reloadAmmo(gun, getAndExtractNeedAmmoCount(shooter, gun, iGun, maxAmmoCount), false);
                 }
             }
         }

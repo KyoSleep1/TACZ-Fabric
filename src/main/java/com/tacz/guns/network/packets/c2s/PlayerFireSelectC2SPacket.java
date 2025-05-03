@@ -21,6 +21,6 @@ public class PlayerFireSelectC2SPacket implements HandledPacket<ServerPlayerEnti
     @Override
     public void handle(ServerPlayerEntity player) {
         if (player == null) return;
-        IGunOperator.fromLivingEntity(player).fireSelect();
+        IGunOperator.fromLivingEntity(player).fireSelect(player.getMainHandStack());
     }
 }

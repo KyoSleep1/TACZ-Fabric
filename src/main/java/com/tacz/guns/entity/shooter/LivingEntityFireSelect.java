@@ -18,21 +18,20 @@ public class LivingEntityFireSelect {
         this.data = data;
     }
 
-    public void fireSelect() {
-        if (data.currentGunItem == null) {
+    public void fireSelect(ItemStack gun) {
+        if (gun == null) {
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return;
         }
-        if (new GunFireSelectEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
+        if (new GunFireSelectEvent(shooter, gun, LogicalSide.SERVER).post()) {
             return;
         }
         NetworkClientHandler.GUN_FIRE_SELECT.sendToSurroundingPlayers(
-                new GunFireSelectS2CPacket(shooter.getId(), currentGunItem), shooter);
+                new GunFireSelectS2CPacket(shooter.getId(), gun), shooter);
         if (iGun instanceof AbstractGunItem logicGun) {
-            logicGun.fireSelect(currentGunItem);
+            logicGun.fireSelect(gun);
         }
     }
 }

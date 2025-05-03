@@ -24,6 +24,6 @@ public class PlayerDrawGunC2SPacket implements HandledPacket<ServerPlayerEntity>
         if (player == null) return;
         PlayerInventory inventory = player.getInventory();
         int selected = inventory.selectedSlot;
-        IGunOperator.fromLivingEntity(player).draw(() -> inventory.getStack(selected));
+        IGunOperator.fromLivingEntity(player).draw(inventory.getStack(selected));
     }
 }

@@ -11,6 +11,7 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
@@ -29,37 +30,36 @@ public class LivingEntityAim {
         data.isAiming = isAim;
     }
 
-    public void zoom() {
-        if (data.currentGunItem == null) {
+    public void zoom(PlayerEntity player, ItemStack gun) {
+        if (gun == null) {
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return;
         }
-        Identifier scopeId = iGun.getAttachmentId(currentGunItem, AttachmentType.SCOPE);
-        ItemStack scopeTag = iGun.getAttachment(currentGunItem, AttachmentType.SCOPE);
+        Identifier scopeId = iGun.getAttachmentId(gun, AttachmentType.SCOPE);
+        ItemStack scopeTag = iGun.getAttachment(gun, AttachmentType.SCOPE);
         if (!DefaultAssets.isEmptyAttachmentId(scopeId) && scopeTag != null) {
             TimelessAPI.getCommonAttachmentIndex(scopeId).ifPresent(index -> {
                 int zoomNumber = AttachmentItemDataAccessor.getZoomNumber(scopeTag);
                 ++zoomNumber;
                 // 避免上溢变成负的
                 zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1);
-                AttachmentItemDataAccessor.setZoomNumber(scopeTag, zoomNumber);
+                AttachmentItemDataAccessor.setZoomNumber(gun, scopeTag, zoomNumber);
+                player.currentScreenHandler.updateToClient();
             });
         }
     }
 
-    public void tickAimingProgress() {
+    public void tickAimingProgress(ItemStack gun) {
         // currentGunItem 如果为 null，则取消瞄准状态并将 aimingProgress 归零。
-        if (data.currentGunItem == null || !(data.currentGunItem.get().getItem() instanceof IGun iGun)) {
+        if (gun == null || !(gun.getItem() instanceof IGun iGun)) {
             data.aimingProgress = 0;
             data.aimingTimestamp = System.currentTimeMillis();
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
         // 如果获取不到 gunIndex，则取消瞄准状态并将 aimingProgress 归零，返回。
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         if (gunIndexOptional.isEmpty()) {
             data.aimingProgress = 0;
@@ -67,7 +67,7 @@ public class LivingEntityAim {
         }
         GunData gunData = gunIndexOptional.get().getGunData();
         final float[] aimTime = new float[]{gunData.getAimTime()};
-        AttachmentDataUtils.getAllAttachmentData(currentGunItem, gunData, attachmentData -> aimTime[0] += attachmentData.getAdsAddendTime());
+        AttachmentDataUtils.getAllAttachmentData(gun, gunData, attachmentData -> aimTime[0] += attachmentData.getAdsAddendTime());
         aimTime[0] = Math.max(0, aimTime[0]);
         float alphaProgress = (System.currentTimeMillis() - data.aimingTimestamp + 1) / (aimTime[0] * 1000);
         if (data.isAiming) {
@@ -86,7 +86,7 @@ public class LivingEntityAim {
         data.aimingTimestamp = System.currentTimeMillis();
     }
 
-    public void tickSprint() {
+    public void tickSprint(ItemStack gun) {
         IGunOperator operator = IGunOperator.fromLivingEntity(shooter);
         ReloadState reloadState = operator.getSynReloadState();
         if (data.isAiming || (reloadState.getStateType().isReloading() && !reloadState.getStateType().isReloadFinishing())) {
@@ -95,15 +95,14 @@ public class LivingEntityAim {
         if (data.sprintTimestamp == -1) {
             data.sprintTimestamp = System.currentTimeMillis();
         }
-        if (data.currentGunItem == null) {
+        if (gun == null) {
             return;
         }
-        ItemStack gunItem = data.currentGunItem.get();
-        IGun iGun = IGun.getIGunOrNull(gunItem);
+        IGun iGun = IGun.getIGunOrNull(gun);
         if (iGun == null) {
             return;
         }
-        TimelessAPI.getCommonGunIndex(iGun.getGunId(gunItem)).ifPresentOrElse(gunIndex -> {
+        TimelessAPI.getCommonGunIndex(iGun.getGunId(gun)).ifPresentOrElse(gunIndex -> {
             float gunSprintTime = gunIndex.getGunData().getSprintTime();
             if (shooter.isSprinting() && !shooter.isInSneakingPose()) {
                 data.sprintTimeS += (System.currentTimeMillis() - data.sprintTimestamp) / 1000f;

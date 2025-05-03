@@ -21,6 +21,6 @@ public class PlayerMeleeC2SPacket implements HandledPacket<ServerPlayerEntity> {
     @Override
     public void handle(ServerPlayerEntity player) {
         if (player == null) return;
-        IGunOperator.fromLivingEntity(player).melee();
+        IGunOperator.fromLivingEntity(player).melee(player.getMainHandStack());
     }
 }

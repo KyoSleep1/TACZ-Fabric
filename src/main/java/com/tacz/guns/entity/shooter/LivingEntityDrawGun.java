@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class LivingEntityDrawGun {
     private final LivingEntity shooter;
@@ -23,7 +22,7 @@ public class LivingEntityDrawGun {
         this.data = data;
     }
 
-    public void draw(Supplier<ItemStack> gunItemSupplier) {
+    public void draw(ItemStack gun) {
         // 重置各个状态
         data.initialData();
         // 更新切枪时间戳
@@ -41,23 +40,20 @@ public class LivingEntityDrawGun {
                 data.drawTimestamp = System.currentTimeMillis() + (long) (data.currentPutAwayTimeS * 1000);
             }
         }
-        ItemStack lastItem = data.currentGunItem == null ? ItemStack.EMPTY : data.currentGunItem.get();
-        new GunDrawEvent(shooter, lastItem, gunItemSupplier.get(), LogicalSide.SERVER).post();
-        NetworkClientHandler.GUN_DRAW.sendToSurroundingPlayers(new GunDrawS2CPacket(shooter.getId(), lastItem,
-                gunItemSupplier.get()), shooter);
-        data.currentGunItem = gunItemSupplier;
-        updatePutAwayTime();
+        new GunDrawEvent(shooter, gun, gun, LogicalSide.SERVER).post();
+        NetworkClientHandler.GUN_DRAW.sendToSurroundingPlayers(new GunDrawS2CPacket(shooter.getId(), gun,
+                gun), shooter);
+        updatePutAwayTime(gun);
     }
 
-    public long getDrawCoolDown() {
-        if (data.currentGunItem == null) {
+    public long getDrawCoolDown(ItemStack gun) {
+        if (gun == null) {
             return 0;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return 0;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
         return gunIndex.map(index -> {
             long coolDown = (long) (index.getGunData().getDrawTime() * 1000) - (System.currentTimeMillis() - data.drawTimestamp);
@@ -70,11 +66,10 @@ public class LivingEntityDrawGun {
         }).orElse(-1L);
     }
 
-    private void updatePutAwayTime() {
-        ItemStack gunItem = data.currentGunItem == null ? ItemStack.EMPTY : data.currentGunItem.get();
-        IGun iGun = IGun.getIGunOrNull(gunItem);
+    private void updatePutAwayTime(ItemStack gun) {
+        IGun iGun = IGun.getIGunOrNull(gun);
         if (iGun != null) {
-            Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(iGun.getGunId(gunItem));
+            Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(iGun.getGunId(gun));
             data.currentPutAwayTimeS = gunIndex.map(index -> index.getGunData().getPutAwayTime()).orElse(0F);
         } else {
             data.currentPutAwayTimeS = 0;

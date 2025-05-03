@@ -8,7 +8,6 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.network.NetworkClientHandler;
-import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.packets.s2c.event.GunMeleeS2CPacket;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.attachment.MeleeData;
@@ -32,33 +31,32 @@ public class LivingEntityMelee {
         this.draw = draw;
     }
 
-    public void melee() {
-        if (data.currentGunItem == null) {
+    public void melee(ItemStack gun) {
+        if (gun == null) {
             return;
         }
         // 检查是否在切枪
-        if (draw.getDrawCoolDown() != 0) {
+        if (draw.getDrawCoolDown(gun) != 0) {
             return;
         }
         // 检查是否在拉栓
         if (data.boltCoolDown >= 0) {
             return;
         }
-        long coolDown = getMeleeCoolDown();
+        long coolDown = getMeleeCoolDown(gun);
         if (coolDown != 0) {
             return;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
         // 触发近战事件
-        if (new GunMeleeEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
+        if (new GunMeleeEvent(shooter, gun, LogicalSide.SERVER).post()) {
             return;
         }
-        NetworkClientHandler.GUN_MELEE.sendToSurroundingPlayers(new GunMeleeS2CPacket(shooter.getId(), currentGunItem),
+        NetworkClientHandler.GUN_MELEE.sendToSurroundingPlayers(new GunMeleeS2CPacket(shooter.getId(), gun),
                 shooter);
-        if (currentGunItem.getItem() instanceof AbstractGunItem logicGun) {
+        if (gun.getItem() instanceof AbstractGunItem logicGun) {
             data.meleeTimestamp = System.currentTimeMillis();
 
-            Identifier muzzleId = logicGun.getAttachmentId(currentGunItem, AttachmentType.MUZZLE);
+            Identifier muzzleId = logicGun.getAttachmentId(gun, AttachmentType.MUZZLE);
             MeleeData muzzleMeleeData = getMeleeData(muzzleId);
             if (muzzleMeleeData != null) {
                 float prepTime = muzzleMeleeData.getPrepTime();
@@ -66,7 +64,7 @@ public class LivingEntityMelee {
                 return;
             }
 
-            Identifier stockId = logicGun.getAttachmentId(currentGunItem, AttachmentType.STOCK);
+            Identifier stockId = logicGun.getAttachmentId(gun, AttachmentType.STOCK);
             MeleeData stockMeleeData = getMeleeData(stockId);
             if (stockMeleeData != null) {
                 float prepTime = stockMeleeData.getPrepTime();
@@ -74,7 +72,7 @@ public class LivingEntityMelee {
                 return;
             }
 
-            Identifier gunId = logicGun.getGunId(currentGunItem);
+            Identifier gunId = logicGun.getGunId(gun);
             TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {
                 GunDefaultMeleeData defaultMeleeData = index.getGunData().getMeleeData().getDefaultMeleeData();
                 if (defaultMeleeData == null) {
@@ -86,44 +84,42 @@ public class LivingEntityMelee {
         }
     }
 
-    public void scheduleTickMelee() {
+    public void scheduleTickMelee(ItemStack gun) {
         if (this.data.meleePrepTickCount > 0) {
             this.data.meleePrepTickCount--;
             return;
         }
         if (this.data.meleePrepTickCount == 0) {
             this.data.meleePrepTickCount = -1;
-            if (data.currentGunItem == null) {
+            if (gun == null) {
                 return;
             }
-            ItemStack currentGunItem = data.currentGunItem.get();
-            if (currentGunItem.getItem() instanceof AbstractGunItem logicGun) {
-                logicGun.melee(this.shooter, currentGunItem);
+            if (gun.getItem() instanceof AbstractGunItem logicGun) {
+                logicGun.melee(this.shooter, gun);
             }
         }
     }
 
-    public long getMeleeCoolDown() {
-        if (data.currentGunItem == null) {
+    public long getMeleeCoolDown(ItemStack gun) {
+        if (gun == null) {
             return 0;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return 0;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
         return gunIndex.map(index -> {
             GunMeleeData meleeData = index.getGunData().getMeleeData();
             // 获取枪口，看看有没有近战数据
-            Identifier muzzleId = iGun.getAttachmentId(currentGunItem, AttachmentType.MUZZLE);
+            Identifier muzzleId = iGun.getAttachmentId(gun, AttachmentType.MUZZLE);
             MeleeData muzzleMeleeData = getMeleeData(muzzleId);
             if (muzzleMeleeData != null) {
                 return getTotalCooldownTime(meleeData, muzzleMeleeData.getCooldown());
             }
 
             // 枪托
-            Identifier stockId = iGun.getAttachmentId(currentGunItem, AttachmentType.STOCK);
+            Identifier stockId = iGun.getAttachmentId(gun, AttachmentType.STOCK);
             MeleeData stockMeleeData = getMeleeData(stockId);
             if (stockMeleeData != null) {
                 return getTotalCooldownTime(meleeData, stockMeleeData.getCooldown());

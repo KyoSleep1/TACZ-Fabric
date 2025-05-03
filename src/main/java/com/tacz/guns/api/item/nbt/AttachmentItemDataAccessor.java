@@ -9,14 +9,22 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface AttachmentItemDataAccessor extends IAttachment {
 
     static int getZoomNumber(ItemStack attachment) {
         return attachment.getOrDefault(ModItemComponents.ATTACHMENT_ZOOM_NUMBER, 0);
     }
 
-    static void setZoomNumber(ItemStack attachment, int zoomNumber) {
+    static void setZoomNumber(ItemStack gun, ItemStack attachment, int zoomNumber) {
+        final List<ItemStack> attachments = new ArrayList<>(gun.getOrDefault(ModItemComponents.GUN_ATTACHMENTS,
+                new ArrayList<>()));
+        attachments.remove(attachment);
         attachment.set(ModItemComponents.ATTACHMENT_ZOOM_NUMBER, zoomNumber);
+        attachments.add(attachment);
+        gun.set(ModItemComponents.GUN_ATTACHMENTS, attachments);
     }
 
     @Override
@@ -61,7 +69,7 @@ public interface AttachmentItemDataAccessor extends IAttachment {
     }
 
     @Override
-    default void internalSetZoomNumber(ItemStack attachment, int zoomNumber) {
-        AttachmentItemDataAccessor.setZoomNumber(attachment, zoomNumber);
+    default void internalSetZoomNumber(ItemStack gun, ItemStack attachment, int zoomNumber) {
+        AttachmentItemDataAccessor.setZoomNumber(gun, attachment, zoomNumber);
     }
 }

@@ -16,6 +16,6 @@ public record PlayerShootC2SPacket () implements HandledPacket<ServerPlayerEntit
 
     @Override
     public void handle(ServerPlayerEntity sender) {
-        IGunOperator.fromLivingEntity(sender).shoot(sender::getPitch, sender::getYaw);
+        IGunOperator.fromLivingEntity(sender).shoot(sender.getMainHandStack(), sender::getPitch, sender::getYaw);
     }
 }

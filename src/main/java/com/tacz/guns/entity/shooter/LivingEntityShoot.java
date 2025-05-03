@@ -30,22 +30,21 @@ public class LivingEntityShoot {
         this.draw = draw;
     }
 
-    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        if (data.currentGunItem == null) {
+    public ShootResult shoot(ItemStack gun, Supplier<Float> pitch, Supplier<Float> yaw) {
+        if (gun == null) {
             return ShootResult.NOT_DRAW;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return ShootResult.NOT_GUN;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         if (gunIndexOptional.isEmpty()) {
             return ShootResult.ID_NOT_EXIST;
         }
         CommonGunIndex gunIndex = gunIndexOptional.get();
         // 判断射击是否正在冷却
-        long coolDown = getShootCoolDown();
+        long coolDown = getShootCoolDown(gun);
         if (coolDown == -1) {
             // 一般来说不太可能为 -1，原因未知
             return ShootResult.UNKNOWN_FAIL;
@@ -58,7 +57,7 @@ public class LivingEntityShoot {
             return ShootResult.IS_RELOADING;
         }
         // 检查是否在切枪
-        if (draw.getDrawCoolDown() != 0) {
+        if (draw.getDrawCoolDown(gun) != 0) {
             return ShootResult.IS_DRAWING;
         }
         // 检查是否在拉栓
@@ -70,8 +69,8 @@ public class LivingEntityShoot {
             return ShootResult.IS_SPRINTING;
         }
         Bolt boltType = gunIndex.getGunData().getBolt();
-        boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT;
-        int ammoCount = iGun.getCurrentAmmoCount(currentGunItem) + (hasAmmoInBarrel ? 1 : 0);
+        boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(gun) && boltType != Bolt.OPEN_BOLT;
+        int ammoCount = iGun.getCurrentAmmoCount(gun) + (hasAmmoInBarrel ? 1 : 0);
         // 创造模式也要判断子弹数
         if (ammoCount < 1) {
             return ShootResult.NO_AMMO;
@@ -81,37 +80,36 @@ public class LivingEntityShoot {
             return ShootResult.NEED_BOLT;
         }
         if (boltType == Bolt.CLOSED_BOLT && !hasAmmoInBarrel) {
-            iGun.reduceCurrentAmmoCount(currentGunItem);
-            iGun.setBulletInBarrel(currentGunItem, true);
+            iGun.reduceCurrentAmmoCount(gun);
+            iGun.setBulletInBarrel(gun, true);
         }
         // 触发射击事件
-        if (new GunShootEvent(shooter, currentGunItem, LogicalSide.SERVER).post()) {
+        if (new GunShootEvent(shooter, gun, LogicalSide.SERVER).post()) {
             return ShootResult.FORGE_EVENT_CANCEL;
         }
-        NetworkClientHandler.GUN_SHOOT.sendToSurroundingPlayers(new GunShootS2CPacket(shooter.getId(), currentGunItem),
+        NetworkClientHandler.GUN_SHOOT.sendToSurroundingPlayers(new GunShootS2CPacket(shooter.getId(), gun),
                 shooter);
         // 执行枪械射击逻辑
         if (iGun instanceof AbstractGunItem logicGun) {
             BulletData bulletData = gunIndex.getBulletData();
             boolean isTracerAmmo = bulletData.hasTracerAmmo() && (data.shootCount % (bulletData.getTracerCountInterval() + 1) == 0);
-            logicGun.shoot(currentGunItem, pitch, yaw, isTracerAmmo, shooter);
+            logicGun.shoot(gun, pitch, yaw, isTracerAmmo, shooter);
         }
         data.shootTimestamp = System.currentTimeMillis();
         data.shootCount += 1;
         return ShootResult.SUCCESS;
     }
 
-    public long getShootCoolDown() {
-        if (data.currentGunItem == null) {
+    public long getShootCoolDown(ItemStack gun) {
+        if (gun == null) {
             return 0;
         }
-        ItemStack currentGunItem = data.currentGunItem.get();
-        if (!(currentGunItem.getItem() instanceof IGun iGun)) {
+        if (!(gun.getItem() instanceof IGun iGun)) {
             return 0;
         }
-        Identifier gunId = iGun.getGunId(currentGunItem);
+        Identifier gunId = iGun.getGunId(gun);
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
-        FireMode fireMode = iGun.getFireMode(currentGunItem);
+        FireMode fireMode = iGun.getFireMode(gun);
         if (fireMode == FireMode.BURST) {
             return gunIndex.map(index -> {
                 long coolDown = (long) (index.getGunData().getBurstData().getMinInterval() * 1000f) - (System.currentTimeMillis() - data.shootTimestamp);

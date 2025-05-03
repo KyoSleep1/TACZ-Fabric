@@ -2,7 +2,6 @@ package com.tacz.guns.api.item.nbt;
 
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.FireMode;
@@ -183,24 +182,22 @@ public interface GunItemDataAccessor extends IGun {
         if (!allowAttachment(gun, attachment)) {
             return;
         }
-        final IAttachment iAttachment = IAttachment.getIAttachmentOrNull(attachment);
-        if (iAttachment == null) {
-            return;
-        }
         final List<ItemStack> attachments = gun.getOrDefault(ModItemComponents.GUN_ATTACHMENTS, new ArrayList<>());
         attachments.add(attachment);
         gun.set(ModItemComponents.GUN_ATTACHMENTS, attachments);
     }
 
     @Override
-    default void unloadAttachment(@NotNull ItemStack gun, AttachmentType type) {
+    default void unloadAttachment(@NotNull ItemStack gun, ItemStack attachment, AttachmentType type) {
         if (!allowAttachmentType(gun, type)) {
             return;
         }
         final List<ItemStack> attachments = gun.getOrDefault(ModItemComponents.GUN_ATTACHMENTS, new ArrayList<>());
-        final ItemStack attachment = this.getAttachment(gun, type);
-        if (attachment.isEmpty()) return;
         attachments.remove(attachment);
+        if (attachments.isEmpty()) {
+            gun.remove(ModItemComponents.GUN_ATTACHMENTS);
+            return;
+        }
         gun.set(ModItemComponents.GUN_ATTACHMENTS, attachments);
     }
 
