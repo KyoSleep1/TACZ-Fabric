@@ -73,7 +73,7 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet> {
             {
                 float width = this.dispatcher.gameOptions.getPerspective().isFirstPerson() && bullet.getOwner() instanceof ClientPlayerEntity ? 0.01f : 0.005f;
                 Vec3d bulletPosition = bullet.getLerpedPos(partialTicks);
-                double trailLength = 0.85 * bullet.getVelocity().length();
+                double trailLength = 0.85 * (bullet.getVelocity().length() * 2);
                 double disToEye = bulletPosition.distanceTo(shooter.getCameraPosVec(partialTicks));
                 trailLength = Math.min(trailLength, disToEye * 0.8);
 
