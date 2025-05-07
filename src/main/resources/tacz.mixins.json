@@ -17,7 +17,8 @@
     "common.StairsBlockAccessor",
     "common.item.AbstractHorseEntityMixin",
     "common.item.LivingEntityMixin",
-    "common.item.PlayerEntityMixin"
+    "common.item.PlayerEntityMixin",
+    "server.MixinEntityTrackerEntry"
   ],
   "client": [
     "client.BipedEntityModelMixin",

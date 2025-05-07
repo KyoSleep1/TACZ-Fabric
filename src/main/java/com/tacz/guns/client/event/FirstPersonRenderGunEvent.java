@@ -169,7 +169,7 @@ public class FirstPersonRenderGunEvent {
     }
 
     private static void renderBulletTracer(ClientPlayerEntity player, MatrixStack poseStack, BedrockGunModel gunModel, float partialTicks) {
-        if (!RenderConfig.FIRST_PERSON_BULLET_TRACER_ENABLE.get()) {
+       /** if (!RenderConfig.FIRST_PERSON_BULLET_TRACER_ENABLE.get()) {
             return;
         }
         Optional<BedrockModel> modelOptional = InternalAssetLoader.getBedrockModel(InternalAssetLoader.DEFAULT_BULLET_MODEL);
@@ -253,7 +253,7 @@ public class FirstPersonRenderGunEvent {
                             OverlayTexture.DEFAULT_UV, gunTracerColor[0], gunTracerColor[1], gunTracerColor[2], 1);
                 }
             });
-        }
+        } **/
     }
 
 

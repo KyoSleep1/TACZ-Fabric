@@ -23,9 +23,6 @@
 		],
 		"client": [
 			"com.tacz.guns.GunModClient"
-		],
-		"modmenu": [
-			"com.tacz.guns.compat.modmenu.ModMenuIntegration"
 		]
 	},
 	"mixins": [

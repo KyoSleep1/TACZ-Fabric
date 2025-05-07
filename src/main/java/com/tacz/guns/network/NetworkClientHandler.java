@@ -40,6 +40,8 @@ public class NetworkClientHandler {
             .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_reload"), GunReloadS2CPacket::new);
     public static final S2CPacketType<GunShootS2CPacket> GUN_SHOOT = SimpleNetworking
             .serverToClient(Identifier.of(GunMod.MOD_ID, "gun_shoot"), GunShootS2CPacket::new);
+    public static final S2CPacketType<SpawnBulletS2CPacket> SPAWN_BULLET = SimpleNetworking
+            .serverToClient(Identifier.of(GunMod.MOD_ID, "spawn_bullet"), SpawnBulletS2CPacket::new);
 
     @Environment(EnvType.CLIENT)
     public static final void init() {

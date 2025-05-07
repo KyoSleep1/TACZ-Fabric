@@ -17,3 +17,7 @@ accessible method net/minecraft/util/thread/ThreadExecutor submitAsync (Ljava/la
 accessible field net/minecraft/client/option/KeyBinding timesPressed I
 
 accessible method net/minecraft/entity/vehicle/VehicleEntity asItem ()Lnet/minecraft/item/Item;
+
+accessible method net/minecraft/network/packet/s2c/play/EntitySpawnS2CPacket <init> (Lnet/minecraft/network/RegistryByteBuf;)V
+
+extendable method net/minecraft/network/packet/s2c/play/EntitySpawnS2CPacket write (Lnet/minecraft/network/RegistryByteBuf;)V

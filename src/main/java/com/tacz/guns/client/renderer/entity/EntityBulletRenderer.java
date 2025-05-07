@@ -71,22 +71,18 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet> {
             }
             poseStack.push();
             {
-                float width = 0.005f;
+                float width = this.dispatcher.gameOptions.getPerspective().isFirstPerson() && bullet.getOwner() instanceof ClientPlayerEntity ? 0.01f : 0.005f;
                 Vec3d bulletPosition = bullet.getLerpedPos(partialTicks);
                 double trailLength = 0.85 * bullet.getVelocity().length();
                 double disToEye = bulletPosition.distanceTo(shooter.getCameraPosVec(partialTicks));
                 trailLength = Math.min(trailLength, disToEye * 0.8);
-                if (this.dispatcher.gameOptions.getPerspective().isFirstPerson() && bullet.getOwner() instanceof ClientPlayerEntity) {
-                    // 自己打的曳光弹在第一人称的渲染委托给 FirstPersonRenderGunEvent
-                    poseStack.pop();
-                    return;
-                } else {
-                    width *= (float) Math.max(1.0, disToEye / 3.5);
-                    poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(partialTicks, bullet.prevYaw, bullet.getYaw()) - 180.0F));
-                    poseStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(partialTicks, bullet.prevPitch, bullet.getPitch())));
-                    poseStack.translate(0, 0, trailLength / 2.0);
-                    poseStack.scale(width, width, (float) trailLength);
-                }
+
+                width *= (float) Math.max(1.0, disToEye / 3.5);
+                poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(partialTicks, bullet.prevYaw, bullet.getYaw()) - 180.0F));
+                poseStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(partialTicks, bullet.prevPitch, bullet.getPitch())));
+                poseStack.translate(0, 0, trailLength / 2.0);
+                poseStack.scale(width, width, (float) trailLength);
+
                 // 距离两格外才渲染，只在前 5 tick 判定
                 double bulletDistance = bulletPosition.distanceTo(shooter.getEyePos());
                 if (bullet.age >= 5 || bulletDistance > 2) {
